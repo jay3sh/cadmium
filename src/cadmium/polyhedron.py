@@ -64,7 +64,25 @@ class Polyhedron():
     ppack = csgop(
       c_vertices_1, numvertices_1, 3, c_faces_1, numfaces_1, 3,
       c_vertices_2, numvertices_2, 3, c_faces_2, numfaces_2, 3, 
-      0)
+      1)
+    return Polyhedron(ppack=ppack)
+
+  def __mul__(self, other):
+    c_vertices_1, numvertices_1, c_faces_1, numfaces_1 = self.get_c_data()
+    c_vertices_2, numvertices_2, c_faces_2, numfaces_2 = other.get_c_data()
+    ppack = csgop(
+      c_vertices_1, numvertices_1, 3, c_faces_1, numfaces_1, 3,
+      c_vertices_2, numvertices_2, 3, c_faces_2, numfaces_2, 3, 
+      2)
+    return Polyhedron(ppack=ppack)
+
+  def __sub__(self, other):
+    c_vertices_1, numvertices_1, c_faces_1, numfaces_1 = self.get_c_data()
+    c_vertices_2, numvertices_2, c_faces_2, numfaces_2 = other.get_c_data()
+    ppack = csgop(
+      c_vertices_1, numvertices_1, 3, c_faces_1, numfaces_1, 3,
+      c_vertices_2, numvertices_2, 3, c_faces_2, numfaces_2, 3, 
+      3)
     return Polyhedron(ppack=ppack)
 
   def __str__(self):

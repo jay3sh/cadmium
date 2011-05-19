@@ -145,7 +145,13 @@ PolyhedronPack *csgop(
   Nef_polyhedron nA(pA);
   Nef_polyhedron nB(pB);
 
-  nA += nB;
+  if(op == OP_UNION) {
+    nA += nB;
+  } else if(op == OP_SUBTRACTION) {
+    nA -= nB;
+  } else if(op == OP_INTERSECTION) {
+    nA *= nB;
+  }
 
   Polyhedron p;
 
