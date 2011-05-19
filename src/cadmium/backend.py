@@ -2,7 +2,7 @@
 from ctypes import *
 
 libc = cdll.LoadLibrary('/lib/libc.so.6')
-libcsg = cdll.LoadLibrary('../build/libcsgop.so')
+libcsg = cdll.LoadLibrary('build/libcsgop.so')
 
 csgop = libcsg.csgop
 memfree = libc.free
