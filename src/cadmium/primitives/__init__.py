@@ -1,4 +1,6 @@
 
+from matrix import Matrix, Quat
+
 class Mesh():
   def __init__(self):
     self.vertices = []
@@ -17,3 +19,7 @@ class Mesh():
 
   def translate(self, d):
     self.vertices = map(lambda v: map(lambda a: a[0]+a[1], zip(v, d)), self.vertices)
+
+  def rotate(self, axis, angle):
+    transform = Quat(axis, angle).toM4() * Matrix()
+    self.vertices = map(lambda v: transform.mulV3(v), self.vertices)
