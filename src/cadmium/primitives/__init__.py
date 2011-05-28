@@ -22,4 +22,4 @@ class Mesh():
 
   def rotate(self, axis, angle):
     transform = Quat(axis, angle).toM4() * Matrix()
-    self.vertices = map(lambda v: transform.mulV3(v), self.vertices)
+    self.vertices = map(lambda v: transform.mulV3(v)[0:3], self.vertices)
