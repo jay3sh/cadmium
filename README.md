@@ -1,5 +1,4 @@
-
-`Cadmium` is a python library for Solid Modelling
+Cadmium is a python library for Solid Modelling
 
 Cadmium allows you to write python code to create primitive objects (Box, Cylinder, Sphere, etc.) and apply CSG operations (Addition, Subtraction, Intersection) on them to create advanced solid models. The primitives have support for affine transformations too (translation, rotation).
 
@@ -22,7 +21,7 @@ Typical Solid modelling code with Cadmium
     fd.write(solid.toSTL())
     fd.close()
 
-Building `Cadmium`
+Building Cadmium
 ---------------------------
 Assumes CGAL 3.8 is installed in /usr/local/
 You need to have [SCons](http://www.scons.org/) for this step
@@ -52,7 +51,7 @@ Cadmium is a work in progress. There are bugs, mainly because of my limited unde
 
 Building and Installing CGAL 
 -----------------------------
-The only dependency that `Cadmium` has is `CGAL`
+The only dependency that Cadmium has is `CGAL`.
 Download [CGAL-3.8](https://gforge.inria.fr/frs/?group_id=52)
 
     unzip CGAL-3.8.zip
