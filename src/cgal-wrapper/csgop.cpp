@@ -1,3 +1,7 @@
+// 
+// Cadmium - Python library for Solid Modelling
+// Copyright (C) 2011 Jayesh Salvi [jayesh <at> 3dtin <dot> com]
+//
 
 #include <CGAL/Inverse_index.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
