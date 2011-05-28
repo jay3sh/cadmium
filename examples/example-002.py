@@ -15,9 +15,9 @@ b1.rotate([0,1,0], 30*math.pi/180.0)
 b2 = Box(x=6, y=4, z=4)
 b2.rotate([0,0,1], 30*math.pi/180.0)
 
-c1 = Cylinder(radius=1, height=5)
+c1 = Cylinder(radius=1, height=20)
 
-p = b1 + b2
+p = (b1 + b2) - c1
 
 fd = open(stlfname, 'w')
 fd.write(p.toSTL())
