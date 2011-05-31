@@ -10,6 +10,7 @@
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/IO/Polyhedron_iostream.h>
 
+#include <new>
 #include <iostream>
 
 
@@ -25,13 +26,14 @@ private:
   int facesize;
 public:
 
-  Builder(double *v[], int numv, int vsize, int *f[], int numf, int fsize) {
-    vertices = v;
-    faces = f;
-    numvertices = numv;
-    numfaces = numf;
-    vtxsize = vsize;
-    facesize = fsize;
+  Builder(double *v[], int numv, int vsize, int *f[], int numf, int fsize) :
+  vertices(v),
+  numvertices(numv),
+  vtxsize(vsize),
+  faces(f),
+  numfaces(numf),
+  facesize(fsize)
+  {
   }
 
   void operator()( HDS& hds) {
@@ -96,12 +98,14 @@ PolyhedronPack *pack_polyhedron(const Polyhedron& P) {
   typedef Polyhedron::Facet_const_iterator                   FCI;
   typedef Polyhedron::Halfedge_around_facet_const_circulator HFCC;
 
-  PolyhedronPack *ppack = (PolyhedronPack *) malloc(sizeof(PolyhedronPack));
-  ppack->error = 0;
+  PolyhedronPack *ppack = (PolyhedronPack *) calloc(1, sizeof(PolyhedronPack));
+  if(!ppack) { throw std::bad_alloc(); }
   ppack->num_vertices = P.size_of_vertices();
   ppack->num_faces = P.size_of_facets();
-  ppack->vertices = (double **) malloc(ppack->num_vertices * sizeof(double *));
-  ppack->faces = (int **) malloc(ppack->num_faces * sizeof(int *));
+  ppack->vertices = (double **) calloc(ppack->num_vertices, sizeof(double *));
+  if(!ppack->vertices) { throw std::bad_alloc(); }
+  ppack->faces = (int **) calloc(ppack->num_faces, sizeof(int *));
+  if(!ppack->faces) { throw std::bad_alloc(); }
 
   int i=0;
   for(VCI vi = P.vertices_begin(); vi != P.vertices_end(); ++vi, ++i) {
@@ -120,7 +124,8 @@ PolyhedronPack *pack_polyhedron(const Polyhedron& P) {
     HFCC hc_end = hc;
     std::size_t n = circulator_size( hc);
     CGAL_assertion( n == 3);
-    ppack->faces[i] = (int *) malloc(3 * sizeof(int));
+    ppack->faces[i] = (int *) calloc(3, sizeof(int));
+    if(!ppack->faces[i]) { throw std::bad_alloc(); }
     int j=0;
     do {
       ppack->faces[i][j] = index[VCI(hc->vertex())];
@@ -163,7 +168,8 @@ PolyhedronPack *csgop(
     nA.convert_to_polyhedron(p);
     return pack_polyhedron(p);
   } else {
-    PolyhedronPack *ppack = (PolyhedronPack *) malloc(sizeof(PolyhedronPack));
+    PolyhedronPack *ppack = (PolyhedronPack *) calloc(1, sizeof(PolyhedronPack));
+    if(!ppack) { throw std::bad_alloc(); }
     ppack->error = ERR_NOT_SIMPLE;
     return ppack;
   }
