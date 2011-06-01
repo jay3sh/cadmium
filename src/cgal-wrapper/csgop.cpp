@@ -91,6 +91,35 @@ typedef struct {
   int **faces;
 } PolyhedronPack;
 
+void free_ppack( PolyhedronPack *ppack )
+{
+  //free ppack.
+  if ( ppack ) {
+    //free ppack->vertices.
+    if ( ppack->vertices ) {
+      for ( int i = 0; i < ppack->num_vertices; ++i ) {
+        free ( ppack->vertices[i] ) ;
+        ppack->vertices[i] = NULL;
+      }
+      free ( ppack->vertices );
+      ppack->vertices = NULL;
+    }
+
+    //free ppack->faces
+    if ( ppack->faces ) {
+      for ( int i = 0; i < ppack->num_faces; ++i ) {
+        free ( ppack->faces[i] );
+        ppack->faces[i] = NULL;
+      }
+      free ( ppack->faces );
+      ppack->faces = NULL;
+    }
+
+    free ( ppack );
+    ppack = NULL;
+  }
+}
+
 PolyhedronPack *pack_polyhedron(const Polyhedron& P) {
 
   typedef Polyhedron::Vertex                                 Vertex;
@@ -103,13 +132,23 @@ PolyhedronPack *pack_polyhedron(const Polyhedron& P) {
   ppack->num_vertices = P.size_of_vertices();
   ppack->num_faces = P.size_of_facets();
   ppack->vertices = (double **) calloc(ppack->num_vertices, sizeof(double *));
-  if(!ppack->vertices) { throw std::bad_alloc(); }
+  if(!ppack->vertices) {
+    free_ppack(ppack);
+    throw std::bad_alloc();
+  }
   ppack->faces = (int **) calloc(ppack->num_faces, sizeof(int *));
-  if(!ppack->faces) { throw std::bad_alloc(); }
+  if(!ppack->faces) {
+    free_ppack(ppack);
+    throw std::bad_alloc();
+  }
 
   int i=0;
   for(VCI vi = P.vertices_begin(); vi != P.vertices_end(); ++vi, ++i) {
-    ppack->vertices[i] = (double *) malloc(3 * sizeof(double));
+    ppack->vertices[i] = (double *) calloc(3, sizeof(double));
+    if(!ppack->vertices[i]) {
+      free_ppack(ppack);
+      throw std::bad_alloc();
+    }
     ppack->vertices[i][0] = CGAL::to_double(vi->point().x());
     ppack->vertices[i][1] = CGAL::to_double(vi->point().y());
     ppack->vertices[i][2] = CGAL::to_double(vi->point().z());
@@ -125,7 +164,10 @@ PolyhedronPack *pack_polyhedron(const Polyhedron& P) {
     std::size_t n = circulator_size( hc);
     CGAL_assertion( n == 3);
     ppack->faces[i] = (int *) calloc(3, sizeof(int));
-    if(!ppack->faces[i]) { throw std::bad_alloc(); }
+    if(!ppack->faces[i]) {
+      free_ppack(ppack);
+      throw std::bad_alloc();
+    }
     int j=0;
     do {
       ppack->faces[i][j] = index[VCI(hc->vertex())];
@@ -175,7 +217,6 @@ PolyhedronPack *csgop(
   }
 
 }
-
 
 #ifdef __cplusplus
 }

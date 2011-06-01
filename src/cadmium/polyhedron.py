@@ -30,16 +30,12 @@ class Polyhedron():
     for i in range(pack.num_vertices):
       x = pack.vertices[i]
       self.vertices.append([x[0], x[1], x[2]])
-      memfree(x)
-    memfree(pack.vertices)
 
     for i in range(pack.num_faces):
       x = pack.faces[i]
       self.faces.append([x[0], x[1], x[2]])
-      memfree(x)
-    memfree(pack.faces)
 
-    memfree(pack)
+    free_ppack(pack)
 
   def __make_c_data__(self):
     PDBLARR = PDOUBLE * len(self.vertices)

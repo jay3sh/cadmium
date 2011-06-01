@@ -5,11 +5,9 @@
 
 from ctypes import *
 
-libc = cdll.LoadLibrary('/lib/libc.so.6')
 libcsg = cdll.LoadLibrary('build/libcsgop.so')
 
 csgop = libcsg.csgop
-memfree = libc.free
 ERR_NOT_SIMPLE = libcsg.ERR_NOT_SIMPLE
 OP_UNION = libcsg.OP_UNION
 OP_INTERSECTION = libcsg.OP_INTERSECTION
@@ -41,3 +39,7 @@ class PolyPack(Structure):
               ]
 
 csgop.restype = POINTER(PolyPack)
+
+free_ppack = libcsg.free_ppack
+free_ppack.argtypes = [ POINTER(PolyPack) ]
+free_ppack.restype = None
