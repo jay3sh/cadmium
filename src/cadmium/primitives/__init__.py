@@ -27,12 +27,3 @@ class Mesh():
   def rotate(self, axis, angle):
     transform = Quat(axis, angle).toM4() * Matrix()
     self.vertices = map(lambda v: transform.mulV3(v)[0:3], self.vertices)
-
-  def toOff(self):
-    offout = 'OFF\n'
-    offout += '%d %d 0\n'%(len(self.vertices), len(self.faces))
-    for vertex in self.vertices:
-      offout += ' '.join(map(str,vertex))+'\n'
-    for face in self.faces:
-      offout += str(len(face))+' '+' '.join(map(str,face))+'\n'
-    return offout

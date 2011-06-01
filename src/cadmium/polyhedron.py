@@ -123,3 +123,12 @@ class Polyhedron():
                   t[9], t[10], t[11]) # vertex 3
       stlbin += attr_byte_count
     return stlbin
+
+  def toOff(self):
+    offout = 'OFF\n'
+    offout += '%d %d 0\n'%(len(self.vertices), len(self.faces))
+    for vertex in self.vertices:
+      offout += ' '.join(map(str,vertex))+'\n'
+    for face in self.faces:
+      offout += str(len(face))+' '+' '.join(map(str,face))+'\n'
+    return offout
