@@ -132,3 +132,24 @@ class Polyhedron():
     for face in self.faces:
       offout += str(len(face))+' '+' '.join(map(str,face))+'\n'
     return offout
+
+  def fromOff(self, off):
+    import re
+    whitespace = re.compile('\s+')
+    linecount = 0
+    vcount = 0
+    self.vertices = []
+    self.faces = []
+    for line in off.split('\n'):
+      if line and len(line.strip()) > 0:
+        if linecount == 1:
+          numv, numf, nume = map(int, whitespace.split(line))
+
+        if linecount > 1:
+          if vcount < numv:
+            self.vertices.append(map(float, whitespace.split(line)))
+            vcount += 1
+          else:
+            self.faces.append(map(int, whitespace.split(line))[1:])
+
+      linecount += 1
