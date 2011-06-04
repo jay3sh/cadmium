@@ -164,15 +164,15 @@ class PolyhedronSimple():
 
   def __add__(self, other):
     id = csgop_simple(self.toOff(), other.toOff(), 1)
-    return Polyhedron(offname='%d.off'%(id))
+    return PolyhedronSimple(offname='%d.off'%(id))
 
   def __mul__(self, other):
     id = csgop_simple(self.toOff(), other.toOff(), 2)
-    return Polyhedron(offname='%d.off'%(id))
+    return PolyhedronSimple(offname='%d.off'%(id))
 
   def __sub__(self, other):
     id = csgop_simple(self.toOff(), other.toOff(), 3)
-    return Polyhedron(offname='%d.off'%(id))
+    return PolyhedronSimple(offname='%d.off'%(id))
 
   def toSTL(self):
     import struct
