@@ -5,6 +5,7 @@
 
 #!/usr/bin/python
 
+import os
 import sys
 import json
 
@@ -93,6 +94,87 @@ class Polyhedron():
 
   def toSTL(self):
 
+    import struct
+    def sub(a, b):
+      return [a[0]-b[0], a[1]-b[1], a[2]-b[2]]
+    def cross(a, b):
+      return [ a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0] ]
+
+    triangles = []
+
+    for f in self.faces:
+      v = map(lambda x: self.vertices[x], f)
+      normal = cross(sub(v[1], v[0]), sub(v[2], v[1])) 
+      triangles.append(
+        [ normal[0], normal[1], normal[2],
+          v[0][0], v[0][1], v[0][2],
+          v[1][0], v[1][1], v[1][2],
+          v[2][0], v[2][1], v[2][2] ])
+
+    tr_format = struct.Struct('<12f')
+    attr_byte_count = struct.pack('H', 0)
+    stl_header = 'Exported from Cadmium'+59*' '
+    stlbin = struct.pack('80s', stl_header)
+    stlbin += struct.pack('I', len(self.faces))
+    for t in triangles:
+      stlbin += tr_format.pack(
+                  t[0], t[1], t[2],   # normal
+                  t[3], t[4], t[5],   # vertex 1
+                  t[6], t[7], t[8],   # vertex 2
+                  t[9], t[10], t[11]) # vertex 3
+      stlbin += attr_byte_count
+    return stlbin
+
+  def toOff(self):
+    offout = 'OFF\n'
+    offout += '%d %d 0\n'%(len(self.vertices), len(self.faces))
+    for vertex in self.vertices:
+      offout += ' '.join(map(str,vertex))+'\n'
+    for face in self.faces:
+      offout += str(len(face))+' '+' '.join(map(str,face))+'\n'
+    return offout
+
+  def fromOff(self, off):
+    import re
+    whitespace = re.compile('\s+')
+    linecount = 0
+    vcount = 0
+    self.vertices = []
+    self.faces = []
+    for line in off.split('\n'):
+      if line and len(line.strip()) > 0:
+        if linecount == 1:
+          numv, numf, nume = map(int, whitespace.split(line))
+
+        if linecount > 1:
+          if vcount < numv:
+            self.vertices.append(map(float, whitespace.split(line)))
+            vcount += 1
+          else:
+            self.faces.append(map(int, whitespace.split(line))[1:])
+
+      linecount += 1
+
+class PolyhedronSimple():
+  def __init__(self, offname=None):
+    if offname:
+      off = open(offname, 'r').read()
+      self.fromOff(off)
+      os.remove(offname)
+
+  def __add__(self, other):
+    id = csgop_simple(self.toOff(), other.toOff(), 1)
+    return Polyhedron(offname='%d.off'%(id))
+
+  def __mul__(self, other):
+    id = csgop_simple(self.toOff(), other.toOff(), 2)
+    return Polyhedron(offname='%d.off'%(id))
+
+  def __sub__(self, other):
+    id = csgop_simple(self.toOff(), other.toOff(), 3)
+    return Polyhedron(offname='%d.off'%(id))
+
+  def toSTL(self):
     import struct
     def sub(a, b):
       return [a[0]-b[0], a[1]-b[1], a[2]-b[2]]

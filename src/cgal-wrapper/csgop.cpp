@@ -12,6 +12,8 @@
 
 #include <new>
 #include <iostream>
+#include <sstream>
+#include <fstream>
 
 
 // A modifier creating a triangle with the incremental builder.
@@ -216,6 +218,30 @@ PolyhedronPack *csgop(
     return ppack;
   }
 
+}
+
+int csgop_simple(const char* offA, const char* offB, int op) {
+  std::istringstream istreamA(offA);
+  std::istringstream istreamB(offB);
+  Polyhedron pA, pB;
+  istreamA >> pA;
+  istreamB >> pB;
+  Nef_polyhedron nA(pA);
+  Nef_polyhedron nB(pB);
+
+  if(op == OP_UNION) {
+    nA += nB;
+  } else if(op == OP_SUBTRACTION) {
+    nA -= nB;
+  } else if(op == OP_INTERSECTION) {
+    nA *= nB;
+  }
+
+  Polyhedron p;
+  nA.convert_to_polyhedron(p);
+  std::ofstream out("42.off");
+  out << p;
+  return 42;
 }
 
 #ifdef __cplusplus
