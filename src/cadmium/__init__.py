@@ -4,11 +4,17 @@
 #
 
 import polyhedronOCC
-#import primitives.cylinder
-#import primitives.sphere
+import primitives.cylinderOCC
+import primitives.sphereOCC
 import primitives.boxOCC
+import primitives.coneOCC
+import primitives.wedgeOCC
+import primitives.torusOCC
 
-#Cylinder = primitives.cylinder.Cylinder
-#Sphere = primitives.sphere.Sphere
+Cylinder = primitives.cylinderOCC.Cylinder
+Sphere = primitives.sphereOCC.Sphere
 Box = primitives.boxOCC.Box
+Cone = primitives.coneOCC.Cone
+Wedge = primitives.wedgeOCC.Wedge
+Torus = primitives.torusOCC.Torus
 
