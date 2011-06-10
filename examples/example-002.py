@@ -4,22 +4,20 @@ import sys
 import math
 sys.path.append('./src')
 
-from cadmium import Box
-from cadmium import Sphere
-from cadmium import Cylinder
+from cadmium import *
 
 stlfname = sys.argv[1]
 
 b1 = Box(x=4, y=4, z=4)
-b1.rotate([0,1,0], 30*math.pi/180.0)
+b1.rotate(Y_axis, 30)
 
 b2 = Box(x=6, y=4, z=4)
-b2.rotate([0,0,1], 30*math.pi/180.0)
+b2.rotate(Z_axis, 30)
 
 c1 = Cylinder(radius=1, height=20)
+c1.rotate(X_axis, 30)
+c1.translate(2,0,0)
 
 p = (b1 + b2) - c1
 
-fd = open(stlfname, 'w')
-fd.write(p.toSTL())
-fd.close()
+p.toSTL(stlfname)
