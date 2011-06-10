@@ -30,7 +30,7 @@ class Polyhedron():
     return Polyhedron(shape=subtraction)
 
   def translate(self, x=0, y=0, z=0, delta=[0,0,0]):
-    if x > 0 or y > 0 or z > 0:
+    if x != 0 or y != 0 or z != 0:
       delta = [x,y,z]
 
     xform = gp_Trsf()
@@ -38,6 +38,7 @@ class Polyhedron():
     brep = BRepBuilderAPI_Transform(self.shape, xform, False)
     brep.Build()
     self.shape = brep.Shape()
+    return self
 
   def rotate(self, axis=cadmium.Z_axis, angle=0):
     xform = gp_Trsf()
@@ -45,6 +46,7 @@ class Polyhedron():
     brep = BRepBuilderAPI_Transform(self.shape, xform, False)
     brep.Build()
     self.shape = brep.Shape()
+    return self
 
   def toSTL(self, filename, ascii=False):
     StlAPI.StlAPI_Write(self.shape, filename, ascii)
