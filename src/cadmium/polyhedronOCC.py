@@ -5,6 +5,9 @@
 
 #!/usr/bin/python
 
+import math
+import cadmium
+
 from OCC import StlAPI
 from OCC.BRepAlgoAPI import *
 from OCC.BRepBuilderAPI import *
@@ -32,6 +35,13 @@ class Polyhedron():
 
     xform = gp_Trsf()
     xform.SetTranslation(gp_Vec(delta[0], delta[1], delta[2]))
+    brep = BRepBuilderAPI_Transform(self.shape, xform, False)
+    brep.Build()
+    self.shape = brep.Shape()
+
+  def rotate(self, axis=cadmium.Z_axis, angle=0):
+    xform = gp_Trsf()
+    xform.SetRotation(axis, angle*math.pi/180.0);
     brep = BRepBuilderAPI_Transform(self.shape, xform, False)
     brep.Build()
     self.shape = brep.Shape()
