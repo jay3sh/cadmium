@@ -1,4 +1,0 @@
-Examples in this directory are known failures and require debugging.
-
-Do NOT run them before reading the comments describing the failure. Some
-failures can lead to system wide freeze, due to excessive memory allocation.

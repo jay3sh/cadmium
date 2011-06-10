@@ -10,19 +10,14 @@ import sys
 import math
 sys.path.append('./src')
 
-from cadmium import Box
-from cadmium import Sphere
-from cadmium import Cylinder
+from cadmium import *
 
 stlfname = sys.argv[1]
 
 b0 = Box(x=2,y=2,z=2)
-c0 = Cylinder(radius=1, height=8)
 
 s0 = Sphere(radius=2)
 
-u = b0 + s0
+u = s0 - b0
 
-fd = open(stlfname, 'w')
-fd.write(u.toSTL())
-fd.close()
+u.toSTL(stlfname)
