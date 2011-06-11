@@ -8,15 +8,14 @@ from cadmium import *
 
 stlfname = sys.argv[1]
 
-c0 = Cylinder(radius=1, height=8)
-c1 = Cylinder(radius=1, height=6)
-c1.rotate(X_axis, 30)
-c2 = Cylinder(radius=1, height=6)
-c2.rotate(X_axis, -30)
+c0 = Cylinder(radius=1, height=8, center=True)
+c1 = Cylinder(radius=1, height=8, center=True).rotate(X_axis, 45)
+c2 = Cylinder(radius=1, height=8, center=True).rotate(X_axis, -45)
+c3 = Cylinder(radius=1, height=8, center=True).rotate(X_axis, 90)
+b = Box(x=8,y=1,z=1,center=True)
+s0 = Sphere(r=1).translate(1.5,0,0)
+s1 = Sphere(r=1).translate(-1.5,0,0)
 
-b = Box(x=1,y=5,z=1)
-b.translate(0,-2.5,3)
-
-u = (c0 + c1 + c2) - b
+u = ((c0 + c1 + c2 + c3) - b) - (s0 + s1)
 
 u.toSTL(stlfname)
