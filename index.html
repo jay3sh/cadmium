@@ -14,7 +14,6 @@
     }
     #container {
       margin: 0 auto;
-      width: 700px;
     }
     h1 { font-size: 3.8em; color: #363636; margin-bottom: 3px; }
     h1 .small { font-size: 0.4em; }
@@ -24,7 +23,7 @@
     a { color: #363636; }
     .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
     .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
+    pre { background: #000; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
   </style>
@@ -41,16 +40,37 @@
       Python library for Solid Modelling
     </div>
 
-    <h2>Screenshots</h2>
-    STL files generated from Cadmium python scripts (as viewed in MeshLab)<br/><br/>
-    Source: <a href="https://github.com/jayesh3/cadmium/blob/master/examples/example-001.py">examples-001.py</a> <br/>
-    <img src="images/example-001.png"/>
-    <br/>
-    Source: <a href="https://github.com/jayesh3/cadmium/blob/master/examples/example-002.py">examples-002.py</a> <br/>
-    <img src="images/example-002.png"/>
-    <br/>
-    Source: <a href="https://github.com/jayesh3/cadmium/blob/master/examples/gear.py">gear.py</a> <br/>
-    <img src="images/gear.png"/>
+    <h2>Examples</h2>
+    <table>
+      <tr><td><h3>Parametric Bushing</h3></td></tr>
+      <tr>
+        <td>
+        <img src="images/bushing.png"/>
+        </td>
+        <td>
+        <script src="https://gist.github.com/1020320.js?file=parametric-bushing.py"></script>
+        </td>
+      </tr>
+      <tr><td><h3>Caterpillar chain wheel</h3></td></tr>
+      <tr>
+        <td>
+        <img src="images/chainwheel.png"/>
+        </td>
+        <td>
+        <script src="https://gist.github.com/1020327.js?file=chainwheel.py"></script>
+        </td>
+      </tr>
+      <tr><td><h3>Abstract</h3></td></tr>
+      <tr>
+        <td>
+        <img src="images/abstract.png"/>
+        </td>
+        <td>
+        <script src="https://gist.github.com/1020333.js?file=abstract.py"></script>
+        </td>
+      </tr>
+    </table>
+
     <br/>
     <h2>Dependencies</h2>
 <p>CGAL 3.8</p>
