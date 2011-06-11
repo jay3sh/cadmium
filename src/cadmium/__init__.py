@@ -8,18 +8,16 @@ X_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(1,0,0))
 Y_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(0,1,0))
 Z_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(0,0,1))
 
-import polyhedronOCC
-import primitives.cylinderOCC
-import primitives.sphereOCC
-import primitives.boxOCC
-import primitives.coneOCC
-import primitives.wedgeOCC
-import primitives.torusOCC
+import polyhedron
+import primitives.cylinder
+import primitives.sphere
+import primitives.box
+import primitives.cone
+import primitives.wedge
 
-Cylinder = primitives.cylinderOCC.Cylinder
-Sphere = primitives.sphereOCC.Sphere
-Box = primitives.boxOCC.Box
-Cone = primitives.coneOCC.Cone
-Wedge = primitives.wedgeOCC.Wedge
-Torus = primitives.torusOCC.Torus
+Cylinder = primitives.cylinder.Cylinder
+Sphere = primitives.sphere.Sphere
+Box = primitives.box.Box
+Cone = primitives.cone.Cone
+Wedge = primitives.wedge.Wedge
 

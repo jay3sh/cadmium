@@ -6,11 +6,13 @@
 import math
 from OCC.BRepPrimAPI import *
 
-from cadmium.polyhedronOCC import Polyhedron
+from cadmium.polyhedron import Polyhedron
 
-class Sphere(Polyhedron):
+class Cone(Polyhedron):
   
-  def __init__(self, r=None, radius=None, phi=360):
+  def __init__(self, r=None, radius=None, h=None, height=None, pie=360):
     if radius: r = radius
-    self.instance = BRepPrimAPI_MakeSphere(r, phi*math.pi/180)
+    if height: h = height
+    self.instance = BRepPrimAPI_MakeCone(r1, r2, h, pie*math.pi/180)
     Polyhedron.__init__(self, shape=self.instance.Shape())
+    

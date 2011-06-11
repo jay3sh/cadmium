@@ -6,7 +6,7 @@
 import math
 from OCC.BRepPrimAPI import *
 
-from cadmium.polyhedronOCC import Polyhedron
+from cadmium.polyhedron import Polyhedron
 
 class Wedge(Polyhedron):
   
