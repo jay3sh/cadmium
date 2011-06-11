@@ -40,10 +40,9 @@ Cadmium is a work in progress. Bug reports and patches are welcome.
 
 Getting Dependencies - PythonOCC
 ---------------------------------
-The easiest way to setup PythonOCC is to do it in Ubuntu server VM (unless you run Ubuntu natively). Although, PythonOCC includes some GUI utilities Cadmium doesn't need them, so you can use Ubuntu server VM.
+Cadmium depends on PythonOCC which in turn requires OpenCASCADE.
 
-    # Installing OpenCASCADE
-    apt-get install libopencascade-dev
+The easiest way to setup PythonOCC and OpenCASCADE is to do it in Ubuntu server VM (unless you run Ubuntu natively). Although, PythonOCC includes some GUI utilities Cadmium doesn't need them, so you can use Ubuntu server VM.
 
-You can get PythonOCC from [here](http://www.pythonocc.org/download/). If you choose to build it from source [these instructions](http://code.google.com/p/pythonocc/source/browse/trunk/INSTALL) are helpful.
+To install OpenCASCADE just do `apt-get install libopencascade-dev`. You can get PythonOCC from [here](http://www.pythonocc.org/download/). If you choose to build it from source [these instructions](http://code.google.com/p/pythonocc/source/browse/trunk/INSTALL) are helpful.
 
