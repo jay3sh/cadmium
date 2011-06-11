@@ -45,5 +45,5 @@ The easiest way to setup PythonOCC is to do it in Ubuntu server VM (unless you r
     # Installing OpenCASCADE
     apt-get install libopencascade-dev
 
-You can get PythonOCC from (here)[http://www.pythonocc.org/download/]. If you choose to build it from source (these instructions)[http://code.google.com/p/pythonocc/source/browse/trunk/INSTALL] are helpful.
+You can get PythonOCC from [here](http://www.pythonocc.org/download/). If you choose to build it from source [these instructions](http://code.google.com/p/pythonocc/source/browse/trunk/INSTALL) are helpful.
 
