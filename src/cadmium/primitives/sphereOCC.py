@@ -10,6 +10,7 @@ from cadmium.polyhedronOCC import Polyhedron
 
 class Sphere(Polyhedron):
   
-  def __init__(self, radius=5, phi=360):
-    self.instance = BRepPrimAPI_MakeSphere(radius, phi*math.pi/180)
+  def __init__(self, r=None, radius=None, phi=360):
+    if radius: r = radius
+    self.instance = BRepPrimAPI_MakeSphere(r, phi*math.pi/180)
     Polyhedron.__init__(self, shape=self.instance.Shape())
