@@ -16,13 +16,18 @@ class Cylinder(Polyhedron):
     if radius: r=radius
     if height: h=height
 
+    if center:
+      self.centerTranslation = (0,0,-h/2.0)
+    else:
+      self.centerTranslation = (0,0,0)
+      
     if r1 != r2:
       self.instance = BRepPrimAPI_MakeCone(r1, r2, h, pie*math.pi/180)
       Polyhedron.__init__(self, shape=self.instance.Shape())
-      if center: self.translate(0,0,-h/2.0)
     else:
       if not r: r = r1 = r2
       self.instance = BRepPrimAPI_MakeCylinder(r, h, pie*math.pi/180)
       Polyhedron.__init__(self, shape=self.instance.Shape())
-      if center: self.translate(0,0,-h/2.0)
-    
+
+    self.translate(delta=self.centerTranslation)
+

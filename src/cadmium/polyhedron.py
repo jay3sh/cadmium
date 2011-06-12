@@ -29,6 +29,28 @@ class Polyhedron():
     subtraction = BRepAlgoAPI_Cut(self.shape, other.shape).Shape()
     return Polyhedron(shape=subtraction)
 
+  def center(self):
+    '''
+    Returns center of the polyhedron
+
+    This algo must take into consideration the initial center adjustment
+    if one was done. This adjustment is done in the constructor of 
+    primitive, based on its dimensions
+    '''
+    center = gp_Pnt(0,0,0)
+
+    if self.centerTranslation:
+      ct = self.centerTranslation
+      minus_ct = (-ct[0], -ct[1], -ct[2])
+      minusCenterTranslation = gp_Trsf()
+      minusCenterTranslation.SetTranslation(
+        gp_Vec(minus_ct[0],minus_ct[1],minus_ct[2]))
+      center.Transform(minusCenterTranslation)
+
+    xform = self.shape.Location().Transformation()
+    center.Transform(xform)
+    return center
+     
   def translate(self, x=0, y=0, z=0, delta=[0,0,0]):
     if x != 0 or y != 0 or z != 0:
       delta = [x,y,z]
