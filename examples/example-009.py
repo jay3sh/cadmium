@@ -13,22 +13,23 @@ def count_zeroes(lst):
  return sum(1 for x in lst if x == 0)
 
 def menger_void(k):
-  core = Box(k/3,k/3,k/3,center=True) + \
-    Box(k/3,k/3,k/3,center=True).translate(0,0,k/3) + \
-    Box(k/3,k/3,k/3,center=True).translate(0,k/3,0) + \
-    Box(k/3,k/3,k/3,center=True).translate(k/3,0,0) + \
-    Box(k/3,k/3,k/3,center=True).translate(0,0,-k/3) + \
-    Box(k/3,k/3,k/3,center=True).translate(0,-k/3,0) + \
-    Box(k/3,k/3,k/3,center=True).translate(-k/3,0,0)
+  core = Box(k,k,k,center=True) + \
+    Box(k,k,k,center=True).translate(0,0,k) + \
+    Box(k,k,k,center=True).translate(0,k,0) + \
+    Box(k,k,k,center=True).translate(k,0,0) + \
+    Box(k,k,k,center=True).translate(0,0,-k) + \
+    Box(k,k,k,center=True).translate(0,-k,0) + \
+    Box(k,k,k,center=True).translate(-k,0,0)
 
-  if k > LIMIT:
+  if 3*k > LIMIT:
     for x in [-1,0,1]:
       for y in [-1,0,1]:
         for z in [-1,0,1]:
           if count_zeroes((x,y,z)) <= 1:
-            core += menger_void(k/3).translate(x*k/3, y*k/3, z*k/3)
+            core += menger_void(k).translate(x*k, y*k, z*k)
   return core
 
-solid = Box(27,27,27,center=True) - menger_void(27)
+print 'This will take a while...'
+solid = Box(27,27,27,center=True) - menger_void(9)
 
 solid.toSTL(stlfname)
