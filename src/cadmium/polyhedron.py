@@ -70,5 +70,14 @@ class Polyhedron():
     self.shape = brep.Shape()
     return self
 
+  def scale(self, scale=1, reference=None):
+    if not reference: reference = self.center()
+    xform = gp_Trsf()
+    xform.SetScale(reference, scale);
+    brep = BRepBuilderAPI_Transform(self.shape, xform, False)
+    brep.Build()
+    self.shape = brep.Shape()
+    return self
+
   def toSTL(self, filename, ascii=False):
     StlAPI.StlAPI_Write(self.shape, filename, ascii)
