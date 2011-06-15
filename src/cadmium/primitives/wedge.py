@@ -6,11 +6,11 @@
 import math
 from OCC.BRepPrimAPI import *
 
-from cadmium.polyhedron import Polyhedron
+from cadmium.polyhedron import Solid
 
-class Wedge(Polyhedron):
+class Wedge(Solid):
   
   def __init__(self, dx=5, dy=5, dz=5, ltx=0):
     self.instance = BRepPrimAPI_MakeWedge(dx, dy, dz, ltx)
-    Polyhedron.__init__(self, shape=self.instance.Shape())
+    Solid.__init__(self, shape=self.instance.Shape())
     

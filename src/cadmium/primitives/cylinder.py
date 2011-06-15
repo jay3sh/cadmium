@@ -6,9 +6,9 @@
 import math
 from OCC.BRepPrimAPI import *
 
-from cadmium.polyhedron import Polyhedron
+from cadmium.polyhedron import Solid
 
-class Cylinder(Polyhedron):
+class Cylinder(Solid):
   
   def __init__(self, r=None, radius=None, r1=None, r2=None, height=None, 
     h=None, pie=360, center=False):
@@ -23,11 +23,11 @@ class Cylinder(Polyhedron):
       
     if r1 != r2:
       self.instance = BRepPrimAPI_MakeCone(r1, r2, h, pie*math.pi/180)
-      Polyhedron.__init__(self, shape=self.instance.Shape())
+      Solid.__init__(self, shape=self.instance.Shape())
     else:
       if not r: r = r1 = r2
       self.instance = BRepPrimAPI_MakeCylinder(r, h, pie*math.pi/180)
-      Polyhedron.__init__(self, shape=self.instance.Shape())
+      Solid.__init__(self, shape=self.instance.Shape())
 
     self.translate(delta=self.centerTranslation)
 

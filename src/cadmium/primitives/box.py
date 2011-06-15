@@ -5,9 +5,9 @@
 
 from OCC.BRepPrimAPI import *
 
-from cadmium.polyhedron import Polyhedron
+from cadmium.polyhedron import Solid
 
-class Box(Polyhedron):
+class Box(Solid):
   
   def __init__(self, x=10, y=10, z=10, center=False):
 
@@ -17,6 +17,6 @@ class Box(Polyhedron):
       self.centerTranslation = (0,0,0)
 
     self.instance = BRepPrimAPI_MakeBox(x,y,z)
-    Polyhedron.__init__(self, shape=self.instance.Shape())
+    Solid.__init__(self, shape=self.instance.Shape())
     self.translate(delta=self.centerTranslation)
     

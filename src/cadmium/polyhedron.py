@@ -13,21 +13,21 @@ from OCC.BRepAlgoAPI import *
 from OCC.BRepBuilderAPI import *
 from OCC.gp import *
 
-class Polyhedron():
+class Solid():
   def __init__(self, shape=None):
     self.shape = shape
 
   def __add__(self, other):
     union = BRepAlgoAPI_Fuse(self.shape, other.shape).Shape()
-    return Polyhedron(shape=union)
+    return Solid(shape=union)
 
   def __mul__(self, other):
     intersection = BRepAlgoAPI_Common(self.shape, other.shape).Shape()
-    return Polyhedron(shape=intersection)
+    return Solid(shape=intersection)
 
   def __sub__(self, other):
     subtraction = BRepAlgoAPI_Cut(self.shape, other.shape).Shape()
-    return Polyhedron(shape=subtraction)
+    return Solid(shape=subtraction)
 
   def center(self):
     '''

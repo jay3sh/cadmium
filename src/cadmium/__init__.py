@@ -21,3 +21,4 @@ Box = primitives.box.Box
 Cone = primitives.cone.Cone
 Wedge = primitives.wedge.Wedge
 
+Solid = polyhedron.Solid
