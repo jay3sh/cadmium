@@ -8,7 +8,7 @@ X_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(1,0,0))
 Y_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(0,1,0))
 Z_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(0,0,1))
 
-import polyhedron
+import solid 
 import primitives.cylinder
 import primitives.sphere
 import primitives.box
@@ -21,4 +21,4 @@ Box = primitives.box.Box
 Cone = primitives.cone.Cone
 Wedge = primitives.wedge.Wedge
 
-Solid = polyhedron.Solid
+Solid = solid.Solid
