@@ -23,11 +23,11 @@ class Cylinder(Solid):
       
     if r1 != r2:
       self.instance = BRepPrimAPI_MakeCone(r1, r2, h, pie*math.pi/180)
-      Solid.__init__(self, shape=self.instance.Shape())
+      Solid.__init__(self, self.instance.Shape())
     else:
       if not r: r = r1 = r2
       self.instance = BRepPrimAPI_MakeCylinder(r, h, pie*math.pi/180)
-      Solid.__init__(self, shape=self.instance.Shape())
+      Solid.__init__(self, self.instance.Shape())
 
     self.translate(delta=self.centerTranslation)
 

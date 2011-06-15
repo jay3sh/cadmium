@@ -17,6 +17,6 @@ class Box(Solid):
       self.centerTranslation = (0,0,0)
 
     self.instance = BRepPrimAPI_MakeBox(x,y,z)
-    Solid.__init__(self, shape=self.instance.Shape())
+    Solid.__init__(self, self.instance.Shape())
     self.translate(delta=self.centerTranslation)
     

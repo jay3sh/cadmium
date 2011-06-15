@@ -12,22 +12,26 @@ from OCC import StlAPI
 from OCC.BRepAlgoAPI import *
 from OCC.BRepBuilderAPI import *
 from OCC.gp import *
+import OCC.TopoDS
 
 class Solid():
-  def __init__(self, shape=None):
-    self.shape = shape
+  def __init__(self, s=None):
+    if type(s) == OCC.TopoDS.TopoDS_Shape:
+      self.shape = s
+    else:
+      self.shape = s.shape
 
   def __add__(self, other):
     union = BRepAlgoAPI_Fuse(self.shape, other.shape).Shape()
-    return Solid(shape=union)
+    return Solid(union)
 
   def __mul__(self, other):
     intersection = BRepAlgoAPI_Common(self.shape, other.shape).Shape()
-    return Solid(shape=intersection)
+    return Solid(intersection)
 
   def __sub__(self, other):
     subtraction = BRepAlgoAPI_Cut(self.shape, other.shape).Shape()
-    return Solid(shape=subtraction)
+    return Solid(subtraction)
 
   def center(self):
     '''

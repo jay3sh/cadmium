@@ -12,5 +12,5 @@ class Wedge(Solid):
   
   def __init__(self, dx=5, dy=5, dz=5, ltx=0):
     self.instance = BRepPrimAPI_MakeWedge(dx, dy, dz, ltx)
-    Solid.__init__(self, shape=self.instance.Shape())
+    Solid.__init__(self, self.instance.Shape())
     
