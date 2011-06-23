@@ -5,18 +5,26 @@
 
 #!/usr/bin/python
 
-import math
+from math import pi as math_pi
 import cadmium
+import json
 
 from OCC import StlAPI
 from OCC.BRepAlgoAPI import *
 from OCC.BRepBuilderAPI import *
 from OCC.gp import *
-import OCC.TopoDS
+
+from OCC.Utils.Topology import *
+from OCC.TopoDS import *
+from OCC.TopAbs import *
+
+# For generating Triangle Mesh
+from OCC.BRepMesh import *
+from OCC.BRep import *
 
 class Solid():
   def __init__(self, s=None):
-    if type(s) == OCC.TopoDS.TopoDS_Shape:
+    if type(s) == TopoDS_Shape:
       self.shape = s
     else:
       self.shape = s.shape
@@ -32,6 +40,81 @@ class Solid():
   def __sub__(self, other):
     subtraction = BRepAlgoAPI_Cut(self.shape, other.shape).Shape()
     return Solid(subtraction)
+
+  def triangle_is_valid(self, P1,P2,P3):
+      ''' check wether a triangle is or not valid
+      '''
+      V1 = gp_Vec(P1,P2)
+      V2 = gp_Vec(P2,P3)
+      V3 = gp_Vec(P3,P1)
+      if V1.SquareMagnitude()>1e-10 and V2.SquareMagnitude()>1e-10 and V3.SquareMagnitude()>1e-10:
+          V1.Cross(V2)
+          if V1.SquareMagnitude()>1e-10:
+              return True
+          else:
+              print 'Not valid!'
+              return False
+      else:
+          print 'Not valid!'
+          return False
+
+  def _vtxkey(self, v):
+    return '%.4f_%.4f_%.4f'%(v[0], v[1], v[2])
+
+  def _save_vertex(self, vertex):
+    key = self._vtxkey(vertex)
+    if self.vtxmap.has_key(key):
+      return self.vtxmap[key]
+    else:
+      self.vtxmap[key] = self.vcount
+      self.vertices.append(vertex)
+      self.vcount += 1
+      return self.vcount-1
+
+  def _save_face(self, indices):
+    self.faces.append(indices)
+
+  def _reset_mesh(self):
+    self.vtxmap = {}
+    self.vcount = 0
+    self.faces = []
+    self.vertices = []
+
+  def toJSON(self, filename):
+    self._reset_mesh()
+    BRepMesh_Mesh(self.shape, 0.1) # TODO precision
+    points = []
+    faces = []
+    faces_iterator = Topo(self.shape).faces()
+
+    for F in faces_iterator:
+      face_location = F.Location()
+      facing = BRep_Tool_Triangulation(F,face_location).GetObject()
+      tab = facing.Nodes()
+      tri = facing.Triangles()
+
+      for i in range(1,facing.NbTriangles()+1):
+        trian = tri.Value(i)
+        if F.Orientation() == TopAbs_REVERSED:
+          index1, index3, index2 = trian.Get()
+        else:
+          index1, index2, index3 = trian.Get()
+        P1 = tab.Value(index1).Transformed(face_location.Transformation())
+        P2 = tab.Value(index2).Transformed(face_location.Transformation())
+        P3 = tab.Value(index3).Transformed(face_location.Transformation())
+
+        p1_coord = P1.XYZ().Coord()
+        p2_coord = P2.XYZ().Coord()
+        p3_coord = P3.XYZ().Coord()
+
+        if self.triangle_is_valid(P1, P2, P3):
+          i1 = self._save_vertex(p1_coord)
+          i2 = self._save_vertex(p2_coord)
+          i3 = self._save_vertex(p3_coord)
+          self._save_face([i1,i2,i3])
+
+    open(filename, 'w').write(json.dumps({
+      'vertices':self.vertices,'faces':self.faces}))
 
   def center(self):
     '''
@@ -68,7 +151,7 @@ class Solid():
 
   def rotate(self, axis=cadmium.Z_axis, angle=0):
     xform = gp_Trsf()
-    xform.SetRotation(axis, angle*math.pi/180.0);
+    xform.SetRotation(axis, angle*math_pi/180.0);
     brep = BRepBuilderAPI_Transform(self.shape, xform, False)
     brep.Build()
     self.shape = brep.Shape()
