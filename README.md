@@ -2,9 +2,9 @@ Cadmium is a python library for Solid Modelling
 
 Cadmium allows you to write python code to create primitive objects (Box, Cylinder, Sphere, etc.) and apply CSG operations (Addition, Subtraction, Intersection) on them to create advanced solid models. The primitives have support for affine transformations too (translation, rotation).
 
-Screenshots 
------------
-[here](http://jayesh3.github.com/cadmium/).
+Screenshots and examples
+------------------------
+[http://jayesh3.github.com/cadmium/](http://jayesh3.github.com/cadmium/).
 
 Typical Solid modelling code with Cadmium
 ------------------------------------------
