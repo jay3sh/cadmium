@@ -22,6 +22,8 @@ from OCC.TopAbs import *
 from OCC.BRepMesh import *
 from OCC.BRep import *
 
+from OCC.Precision import *
+
 class Solid():
   def __init__(self, s=None):
     if type(s) == TopoDS_Shape:
@@ -162,6 +164,19 @@ class Solid():
     xform = gp_Trsf()
     xform.SetScale(reference, scale);
     brep = BRepBuilderAPI_Transform(self.shape, xform, False)
+    brep.Build()
+    self.shape = brep.Shape()
+    return self
+
+  def shear(self, xy=0, xz=0, yx=0, yz=0, zx=0, zy=0):
+    xform = gp_Trsf()
+    xform.SetValues(
+      1, xy, xz, 0,
+      yx, 1, yz, 0,
+      zx, zy, 1, 0,
+      Precision_Angular(), Precision_Confusion()
+    );
+    brep = BRepBuilderAPI_GTransform(self.shape, gp_GTrsf(xform), False)
     brep.Build()
     self.shape = brep.Shape()
     return self
