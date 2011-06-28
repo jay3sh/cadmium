@@ -84,7 +84,7 @@ class Solid():
 
   def toJSON(self, filename):
     self._reset_mesh()
-    BRepMesh_Mesh(self.shape, 0.1) # TODO precision
+    BRepMesh_Mesh(self.shape, 0.05) # TODO precision
     points = []
     faces = []
     faces_iterator = Topo(self.shape).faces()
