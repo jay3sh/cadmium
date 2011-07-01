@@ -22,3 +22,8 @@ Cone = primitives.cone.Cone
 Wedge = primitives.wedge.Wedge
 
 Solid = solid.Solid
+
+class CadmiumException(BaseException):
+  def __init__(self, msg):
+    self.msg = msg
+    BaseException.__init__(self, msg)
