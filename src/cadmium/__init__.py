@@ -22,3 +22,11 @@ Cone = primitives.cone.Cone
 Wedge = primitives.wedge.Wedge
 
 Solid = solid.Solid
+
+#
+# Annotation decorators
+#
+def param(*arg, **kwdArg):
+  def decorator(func):
+    return func
+  return decorator
