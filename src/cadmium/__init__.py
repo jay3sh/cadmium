@@ -30,3 +30,8 @@ def param(*arg, **kwdArg):
   def decorator(func):
     return func
   return decorator
+
+class CadmiumException(BaseException):
+  def __init__(self, msg):
+    self.msg = msg
+    BaseException.__init__(self, msg)
