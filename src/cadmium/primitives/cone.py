@@ -10,9 +10,19 @@ from cadmium.solid import Solid
 
 class Cone(Solid):
   
-  def __init__(self, r=None, radius=None, h=None, height=None, pie=360):
+  def __init__(self, r=None, radius=None, h=None, height=None, 
+    pie=360, center=False):
+
     if radius: r = radius
     if height: h = height
-    self.instance = BRepPrimAPI_MakeCone(r1, r2, h, pie*math.pi/180)
+
+    if center:
+      self.centerTranslation = (0,0,-h/2.0)
+    else:
+      self.centerTranslation = (0,0,0)
+
+    self.instance = BRepPrimAPI_MakeCone(r, 0.01, h, pie*math.pi/180)
     Solid.__init__(self, self.instance.Shape())
+
+    self.translate(delta=self.centerTranslation)
     
