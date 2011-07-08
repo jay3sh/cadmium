@@ -5,6 +5,7 @@
 
 #!/usr/bin/python
 
+import os
 from math import pi as math_pi
 import cadmium
 import json
@@ -82,7 +83,25 @@ class Solid():
     self.faces = []
     self.vertices = []
 
-  def toJSON(self, filename):
+  def compress_write(self, filename):
+    vstr = '['+','.join(map(lambda x: '[%.2f,%.2f,%.2f]'%\
+      (x[0],x[1],x[2]), self.vertices))+']'
+    fstr = '['+','.join(map(lambda x: '[%d,%d,%d]'%\
+      (x[0],x[1],x[2]), self.faces))+']'
+    minjson = '{"vertices":'+vstr+',"faces":'+fstr+'}'
+
+    plain = open(filename+'.plain', 'w')
+    plain.write(minjson)
+    plain.close()
+    plain = open(filename+'.plain','rb')
+
+    import gzip
+    compressed = gzip.open(filename, 'wb')
+    compressed.writelines(plain)
+    compressed.close()
+    os.remove(filename+'.plain')
+
+  def toJSON(self, filename, compress=False):
     self._reset_mesh()
     BRepMesh_Mesh(self.shape, 0.01) # TODO precision
     points = []
@@ -115,8 +134,11 @@ class Solid():
           i3 = self._save_vertex(p3_coord)
           self._save_face([i1,i2,i3])
 
-    open(filename, 'w').write(json.dumps({
-      'vertices':self.vertices,'faces':self.faces}))
+    if compress:
+      self.compress_write(filename)
+    else:
+      open(filename, 'w').write(json.dumps({
+        'vertices':self.vertices,'faces':self.faces}))
 
   def center(self):
     '''
