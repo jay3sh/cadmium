@@ -28,6 +28,11 @@ Solid = solid.Solid
 #
 # Annotation decorators
 #
+def description(*arg, **kwdArg):
+  def decorator(func):
+    return func
+  return decorator
+
 def param(*arg, **kwdArg):
   def decorator(func):
     return func
