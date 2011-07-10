@@ -82,11 +82,9 @@ class Solid():
     self.faces = []
     self.vertices = []
 
-  def toJSON(self, filename):
+  def toJSON(self, filename, precision=0.01):
     self._reset_mesh()
-    BRepMesh_Mesh(self.shape, 0.01) # TODO precision
-    points = []
-    faces = []
+    BRepMesh_Mesh(self.shape, precision)
     faces_iterator = Topo(self.shape).faces()
 
     for F in faces_iterator:
