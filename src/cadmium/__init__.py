@@ -14,12 +14,14 @@ import primitives.sphere
 import primitives.box
 import primitives.cone
 import primitives.wedge
+import primitives.torus
 
 Cylinder = primitives.cylinder.Cylinder
 Sphere = primitives.sphere.Sphere
 Box = primitives.box.Box
 Cone = primitives.cone.Cone
 Wedge = primitives.wedge.Wedge
+Torus = primitives.torus.Torus
 
 Solid = solid.Solid
 
