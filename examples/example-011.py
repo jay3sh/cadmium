@@ -1,13 +1,28 @@
 #!/usr/bin/python
 
+import os
 import sys
 import math
 sys.path.append('./src')
 
 from cadmium import *
-stlfname = sys.argv[1]
+jsonfname = sys.argv[1]
 
 t = Torus(r1=10,r2=2)
 
-t.toSTL(stlfname)
+precision = 0.01
+t.toJSON(jsonfname, precision=precision)
+size = os.stat(jsonfname).st_size
+print size,precision
+
+while size > 40*1024 and precision <= 0.1: # 40k
+  os.remove(jsonfname)
+
+  precision += 0.01
+  t = Torus(r1=10,r2=2)
+  t.toJSON(jsonfname, precision=precision)
+
+  size = os.stat(jsonfname).st_size
+  print size,precision
+  
 
