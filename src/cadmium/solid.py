@@ -101,11 +101,9 @@ class Solid():
     compressed.close()
     os.remove(filename+'.plain')
 
-  def toJSON(self, filename, compress=False):
+  def toJSON(self, filename, compress=False, precision=0.01):
     self._reset_mesh()
-    BRepMesh_Mesh(self.shape, 0.01) # TODO precision
-    points = []
-    faces = []
+    BRepMesh_Mesh(self.shape, precision)
     faces_iterator = Topo(self.shape).faces()
 
     for F in faces_iterator:
