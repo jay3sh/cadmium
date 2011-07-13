@@ -25,6 +25,16 @@ Torus = primitives.torus.Torus
 
 Solid = solid.Solid
 
+# Value range constants
+POSITIVE = 1
+NEGATIVE = 2
+
+# Alignment constants
+A_MIN = 1
+A_MAX = 2
+A_CENTER = 3
+
+
 #
 # Annotation decorators
 #
