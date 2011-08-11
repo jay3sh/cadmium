@@ -201,5 +201,8 @@ class Solid():
     self.shape = brep.Shape()
     return self
 
-  def toSTL(self, filename, ascii=False):
-    StlAPI.StlAPI_Write(self.shape, filename, ascii)
+  def toSTL(self, filename, ascii=False, deflection=0.01):
+    stl_writer = StlAPI.StlAPI_Writer()
+    stl_writer.SetASCIIMode(ascii)
+    stl_writer.SetDeflection(deflection)
+    stl_writer.Write(self.shape, filename)
