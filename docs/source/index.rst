@@ -7,15 +7,26 @@ Cadmium
 ===================================
 
 .. automodule:: cadmium
+   :members: X_axis,Y_axis,Z_axis
 
 .. autoclass:: Solid
+   :members: __add__,__mul__,__sub__,center,translate,rotate,scale,shear,toSTL,toJSON
 .. autoexception:: CadmiumException 
 
-Indices and tables
+Primitive Solids
 ==================
 
+.. autoclass:: Cylinder
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. autoclass:: Sphere
+
+.. autoclass:: Box
+
+.. autoclass:: Cone
+
+.. autoclass:: Wedge
+
+.. autoclass:: Torus
+
+
 
