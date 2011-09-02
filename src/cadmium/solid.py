@@ -179,11 +179,21 @@ class Solid():
     self.shape = brep.Shape()
     return self
 
-  def scale(self, scale=1, reference=None):
+  def scale(self, scale=1, scaleX=1, scaleY=1, scaleZ=1, reference=None):
     if not reference: reference = self.center()
-    xform = gp_Trsf()
-    xform.SetScale(reference, scale);
-    brep = BRepBuilderAPI_Transform(self.shape, xform, False)
+    if scale != 1:
+      xform = gp_Trsf()
+      xform.SetScale(reference, scale);
+      brep = BRepBuilderAPI_Transform(self.shape, xform, False)
+    else:
+      xform = gp_Trsf()
+      xform.SetValues(
+        scaleX, 0, 0, 0,
+        0, scaleY, 0, 0,
+        0, 0, scaleZ, 0,
+        Precision_Angular(), Precision_Confusion()
+      );
+      brep = BRepBuilderAPI_GTransform(self.shape, gp_GTrsf(xform), False)
     brep.Build()
     self.shape = brep.Shape()
     return self
