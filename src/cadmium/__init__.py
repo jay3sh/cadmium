@@ -1,7 +1,6 @@
-# 
-# Cadmium - Python library for Solid Modelling
-# Copyright (C) 2011 Jayesh Salvi [jayesh <at> 3dtin <dot> com]
-#
+'''
+Python library for Solid Modelling
+'''
 
 from OCC.gp import *
 X_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(1,0,0))
@@ -49,6 +48,9 @@ def param(*arg, **kwdArg):
   return decorator
 
 class CadmiumException(BaseException):
+  '''
+  Useful mainly for validating user provided input for Solid instantiations
+  '''
   def __init__(self, msg):
     self.msg = msg
     BaseException.__init__(self, msg)

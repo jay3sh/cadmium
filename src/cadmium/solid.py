@@ -26,6 +26,9 @@ from OCC.BRep import *
 from OCC.Precision import *
 
 class Solid():
+  '''
+  Base class for all solids (Primitive and Custom). It's created by passing in Shape as argument.
+  '''
   def __init__(self, s=None):
     if type(s) == TopoDS_Shape:
       self.shape = s
@@ -33,14 +36,23 @@ class Solid():
       self.shape = s.shape
 
   def __add__(self, other):
+    '''
+    **Union** with other solid.
+    '''
     union = BRepAlgoAPI_Fuse(self.shape, other.shape).Shape()
     return Solid(union)
 
   def __mul__(self, other):
+    '''
+    **Intersect** with other solid
+    '''
     intersection = BRepAlgoAPI_Common(self.shape, other.shape).Shape()
     return Solid(intersection)
 
   def __sub__(self, other):
+    '''
+    **Subtract** other solid from this
+    '''
     subtraction = BRepAlgoAPI_Cut(self.shape, other.shape).Shape()
     return Solid(subtraction)
 
@@ -102,6 +114,14 @@ class Solid():
     os.remove(filename+'.plain')
 
   def toJSON(self, filename, compress=False, precision=0.01):
+    '''
+    Writes JSON representation of the mesh
+
+    :param filename: Path of the file to write JSON to
+    :type filename: str
+    :param precision: Provides control over quality of exported mesh. Higher the precision value, lower the accuracy of exported mesh, smaller the size of exported file. Lower the precision value, more accurate the exported mesh, bigger the size of exported file.
+    :type precision: float
+    '''
     self._reset_mesh()
     BRepMesh_Mesh(self.shape, precision)
     faces_iterator = Topo(self.shape).faces()
@@ -142,9 +162,7 @@ class Solid():
     '''
     Returns center of the polyhedron
 
-    This algo must take into consideration the initial center adjustment
-    if one was done. This adjustment is done in the constructor of 
-    primitive, based on its dimensions
+    This algo must take into consideration the initial center adjustment if one was done. This adjustment is done in the constructor of primitive, based on its dimensions
     '''
     center = gp_Pnt(0,0,0)
 
@@ -161,6 +179,11 @@ class Solid():
     return center
      
   def translate(self, x=0, y=0, z=0, delta=[0,0,0]):
+    '''
+    Translate the solid
+
+    Either provide the translation as a vector array `delta` or individual components `x`, `y`, `z`
+    '''
     if x != 0 or y != 0 or z != 0:
       delta = [x,y,z]
 
@@ -172,6 +195,11 @@ class Solid():
     return self
 
   def rotate(self, axis=cadmium.Z_axis, angle=0):
+    '''
+    Rotate the solid
+
+    Around the `axis` by `angle` (in degrees)
+    '''
     xform = gp_Trsf()
     xform.SetRotation(axis, angle*math_pi/180.0);
     brep = BRepBuilderAPI_Transform(self.shape, xform, False)
@@ -180,6 +208,9 @@ class Solid():
     return self
 
   def scale(self, scale=1, scaleX=1, scaleY=1, scaleZ=1, reference=None):
+    '''
+    Scale the solid
+    '''
     if not reference: reference = self.center()
     if scale != 1:
       xform = gp_Trsf()
@@ -199,6 +230,9 @@ class Solid():
     return self
 
   def shear(self, xy=0, xz=0, yx=0, yz=0, zx=0, zy=0):
+    '''
+    Shear the solid
+    '''
     xform = gp_Trsf()
     xform.SetValues(
       1, xy, xz, 0,
@@ -212,6 +246,16 @@ class Solid():
     return self
 
   def toSTL(self, filename, ascii=False, deflection=0.01):
+    '''
+    Writes STL output of the solid
+
+    :param filename: Path of the file to write JSON to
+    :type filename: str
+    :param ascii: choose between ASCII or Binary STL format
+    :type ascii: bool
+    :param deflection: Provides control over quality of exported STL. Higher the deflection value, lower the accuracy of exported STL, smaller the size of resulting file. Lower the deflection value, more accurate the exported STL, bigger the size of resulting file.
+    :type deflection: float
+    '''
     stl_writer = StlAPI.StlAPI_Writer()
     stl_writer.SetASCIIMode(ascii)
     stl_writer.SetDeflection(deflection)
