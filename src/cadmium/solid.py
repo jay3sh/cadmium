@@ -138,9 +138,11 @@ class Solid():
 
   def center(self):
     '''
-    Returns center of the polyhedron
+    Returns center of the solid
 
-    This algo must take into consideration the initial center adjustment if one was done. This adjustment is done in the constructor of primitive, based on its dimensions
+    This algo takes into consideration the initial center adjustment 
+    (if one was done). This adjustment is done in the constructor 
+    of primitive, based on its dimensions
     '''
     center = gp_Pnt(0,0,0)
 
@@ -158,9 +160,18 @@ class Solid():
      
   def translate(self, x=0, y=0, z=0, delta=[0,0,0]):
     '''
-    Translate the solid
+    Translate the solid.
+    Either provide delta or one of x,y,z. If either x,y or z are non-zero,
+    delta will be ignored.
 
-    Either provide the translation as a vector array `delta` or individual components `x`, `y`, `z`
+    :param delta: Translation vector
+    :type delta: float
+    :param x: Translation along X
+    :type x: float
+    :param y: Translation along Y
+    :type y: float
+    :param z: Translation along Z
+    :type z: float
     '''
     if x != 0 or y != 0 or z != 0:
       delta = [x,y,z]
@@ -176,7 +187,9 @@ class Solid():
     '''
     Rotate the solid
 
-    Around the `axis` by `angle` (in degrees)
+    :param axis: One of three principal axes (cadmium.X_axis, cadmium.Y_axis, cadmium.Z_Axis)
+    :param angle: in Degrees
+    :type angle: float
     '''
     xform = gp_Trsf()
     xform.SetRotation(axis, angle*math_pi/180.0);
@@ -187,7 +200,18 @@ class Solid():
 
   def scale(self, scale=1, scaleX=1, scaleY=1, scaleZ=1, reference=None):
     '''
-    Scale the solid
+    Scale the solid. Either provide scale parameter for uniform scaling along 
+    all axis. If scale is not provided, but one of scaleX,scaleY,scaleZ is 
+    provided, the solid is scaled along respective dimensions.
+
+    :param scale: Uniform scale factor along all dimensions
+    :type scale: float
+    :param scaleX: Scale factor along X
+    :type scaleX: float
+    :param scaleY: Scale factor along Y
+    :type scaleY: float
+    :param scaleZ: Scale factor along Z
+    :type scaleZ: float
     '''
     if not reference: reference = self.center()
     if scale != 1:
@@ -210,12 +234,19 @@ class Solid():
   def shear(self, xy=0, xz=0, yx=0, yz=0, zx=0, zy=0):
     '''
     Shear the solid
+
     :param xy: Shear along X-axis as function of y
+    :type xy: float
     :param xz: Shear along X-axis as function of z
+    :type xz: float
     :param yx: Shear along Y-axis as function of x
+    :type yx: float
     :param yz: Shear along Y-axis as function of z
+    :type yz: float
     :param zx: Shear along Z-axis as function of x
+    :type zx: float
     :param zy: Shear along Z-axis as function of y
+    :type zy: float
     '''
     xform = gp_Trsf()
     xform.SetValues(
