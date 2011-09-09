@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Cadmium &mdash; Cadmium v0.1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Cadmium v0.1 documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">Cadmium v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-cadmium">
+<span id="cadmium"></span><h1>Cadmium<a class="headerlink" href="#module-cadmium" title="Permalink to this headline">¶</a></h1>
+<p>Python library for Solid Modelling</p>
+<dl class="class">
+<dt id="cadmium.Solid">
+<em class="property">class </em><tt class="descclassname">cadmium.</tt><tt class="descname">Solid</tt><big>(</big><em>s=None</em><big>)</big><a class="headerlink" href="#cadmium.Solid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all solids (Primitive and Custom). It&#8217;s created by passing in Shape as argument.</p>
+<dl class="method">
+<dt id="cadmium.Solid.__add__">
+<tt class="descname">__add__</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#cadmium.Solid.__add__" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Union</strong> with other solid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cadmium.Solid.__mul__">
+<tt class="descname">__mul__</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#cadmium.Solid.__mul__" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Intersect</strong> with other solid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cadmium.Solid.__sub__">
+<tt class="descname">__sub__</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#cadmium.Solid.__sub__" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Subtract</strong> other solid from this</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cadmium.Solid.center">
+<tt class="descname">center</tt><big>(</big><big>)</big><a class="headerlink" href="#cadmium.Solid.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns center of the solid</p>
+<p>This algo takes into consideration the initial center adjustment 
+(if one was done). This adjustment is done in the constructor 
+of primitive, based on its dimensions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cadmium.Solid.translate">
+<tt class="descname">translate</tt><big>(</big><em>x=0</em>, <em>y=0</em>, <em>z=0</em>, <em>delta=</em><span class="optional">[</span>, <em>0</em>, <em>0</em>, <em>0</em><span class="optional">]</span><big>)</big><a class="headerlink" href="#cadmium.Solid.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate the solid.
+Either provide delta or one of x,y,z. If either x,y or z are non-zero,
+delta will be ignored.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>delta</strong> (<em>float</em>) &#8211; Translation vector</li>
+<li><strong>x</strong> (<em>float</em>) &#8211; Translation along X</li>
+<li><strong>y</strong> (<em>float</em>) &#8211; Translation along Y</li>
+<li><strong>z</strong> (<em>float</em>) &#8211; Translation along Z</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cadmium.Solid.rotate">
+<tt class="descname">rotate</tt><big>(</big><em>axis=&lt;OCC.gp.gp_Ax1; proxy of &lt;Swig Object of type 'gp_Ax1 *' at 0xa23f8a8&gt; &gt;</em>, <em>angle=0</em><big>)</big><a class="headerlink" href="#cadmium.Solid.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate the solid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>axis</strong> &#8211; One of three principal axes (cadmium.X_axis, cadmium.Y_axis, cadmium.Z_Axis)</li>
+<li><strong>angle</strong> (<em>float</em>) &#8211; in Degrees</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cadmium.Solid.scale">
+<tt class="descname">scale</tt><big>(</big><em>scale=1</em>, <em>scaleX=1</em>, <em>scaleY=1</em>, <em>scaleZ=1</em>, <em>reference=None</em><big>)</big><a class="headerlink" href="#cadmium.Solid.scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale the solid. Either provide scale parameter for uniform scaling along 
+all axis. If scale is not provided, but one of scaleX,scaleY,scaleZ is 
+provided, the solid is scaled along respective dimensions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>scale</strong> (<em>float</em>) &#8211; Uniform scale factor along all dimensions</li>
+<li><strong>scaleX</strong> (<em>float</em>) &#8211; Scale factor along X</li>
+<li><strong>scaleY</strong> (<em>float</em>) &#8211; Scale factor along Y</li>
+<li><strong>scaleZ</strong> (<em>float</em>) &#8211; Scale factor along Z</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cadmium.Solid.shear">
+<tt class="descname">shear</tt><big>(</big><em>xy=0</em>, <em>xz=0</em>, <em>yx=0</em>, <em>yz=0</em>, <em>zx=0</em>, <em>zy=0</em><big>)</big><a class="headerlink" href="#cadmium.Solid.shear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shear the solid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>xy</strong> (<em>float</em>) &#8211; Shear along X-axis as function of y</li>
+<li><strong>xz</strong> (<em>float</em>) &#8211; Shear along X-axis as function of z</li>
+<li><strong>yx</strong> (<em>float</em>) &#8211; Shear along Y-axis as function of x</li>
+<li><strong>yz</strong> (<em>float</em>) &#8211; Shear along Y-axis as function of z</li>
+<li><strong>zx</strong> (<em>float</em>) &#8211; Shear along Z-axis as function of x</li>
+<li><strong>zy</strong> (<em>float</em>) &#8211; Shear along Z-axis as function of y</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cadmium.Solid.toSTL">
+<tt class="descname">toSTL</tt><big>(</big><em>filename</em>, <em>ascii=False</em>, <em>deflection=0.01</em><big>)</big><a class="headerlink" href="#cadmium.Solid.toSTL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes STL output of the solid</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>str</em>) &#8211; Path of the file to write JSON to</li>
+<li><strong>ascii</strong> (<em>bool</em>) &#8211; choose between ASCII or Binary STL format</li>
+<li><strong>deflection</strong> (<em>float</em>) &#8211; Provides control over quality of exported STL. Higher the deflection value, lower the accuracy of exported STL, smaller the size of resulting file. Lower the deflection value, more accurate the exported STL, bigger the size of resulting file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cadmium.Solid.toJSON">
+<tt class="descname">toJSON</tt><big>(</big><em>filename</em>, <em>precision=0.01</em><big>)</big><a class="headerlink" href="#cadmium.Solid.toJSON" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes JSON representation of the mesh</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>str</em>) &#8211; Path of the file to write JSON to</li>
+<li><strong>precision</strong> (<em>float</em>) &#8211; Provides control over quality of exported mesh. Higher the precision value, lower the accuracy of exported mesh, smaller the size of exported file. Lower the precision value, more accurate the exported mesh, bigger the size of exported file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="cadmium.CadmiumException">
+<em class="property">exception </em><tt class="descclassname">cadmium.</tt><tt class="descname">CadmiumException</tt><big>(</big><em>msg</em><big>)</big><a class="headerlink" href="#cadmium.CadmiumException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Useful mainly for validating user provided input for Solid instantiations</p>
+</dd></dl>
+
+</div>
+<div class="section" id="primitive-solids">
+<h1>Primitive Solids<a class="headerlink" href="#primitive-solids" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="cadmium.Cylinder">
+<em class="property">class </em><tt class="descclassname">cadmium.</tt><tt class="descname">Cylinder</tt><big>(</big><em>r=None</em>, <em>radius=None</em>, <em>r1=None</em>, <em>r2=None</em>, <em>height=None</em>, <em>h=None</em>, <em>pie=360</em>, <em>center=False</em><big>)</big><a class="headerlink" href="#cadmium.Cylinder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="cadmium.Sphere">
+<em class="property">class </em><tt class="descclassname">cadmium.</tt><tt class="descname">Sphere</tt><big>(</big><em>r=None</em>, <em>radius=None</em>, <em>phi=360</em>, <em>center=False</em><big>)</big><a class="headerlink" href="#cadmium.Sphere" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="cadmium.Box">
+<em class="property">class </em><tt class="descclassname">cadmium.</tt><tt class="descname">Box</tt><big>(</big><em>x=10</em>, <em>y=10</em>, <em>z=10</em>, <em>center=False</em><big>)</big><a class="headerlink" href="#cadmium.Box" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="cadmium.Cone">
+<em class="property">class </em><tt class="descclassname">cadmium.</tt><tt class="descname">Cone</tt><big>(</big><em>r=None</em>, <em>radius=None</em>, <em>h=None</em>, <em>height=None</em>, <em>pie=360</em>, <em>center=False</em><big>)</big><a class="headerlink" href="#cadmium.Cone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="cadmium.Wedge">
+<em class="property">class </em><tt class="descclassname">cadmium.</tt><tt class="descname">Wedge</tt><big>(</big><em>dx=5</em>, <em>dy=5</em>, <em>dz=5</em>, <em>center=True</em>, <em>ltx=0</em><big>)</big><a class="headerlink" href="#cadmium.Wedge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="cadmium.Torus">
+<em class="property">class </em><tt class="descclassname">cadmium.</tt><tt class="descname">Torus</tt><big>(</big><em>r1=None</em>, <em>r2=None</em>, <em>angle=360</em>, <em>center=False</em><big>)</big><a class="headerlink" href="#cadmium.Torus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Cadmium</a></li>
+<li><a class="reference internal" href="#primitive-solids">Primitive Solids</a></li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">Cadmium v0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Jayesh Salvi.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.1.
+    </div>
+  </body>
+</html>
