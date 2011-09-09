@@ -232,6 +232,12 @@ class Solid():
   def shear(self, xy=0, xz=0, yx=0, yz=0, zx=0, zy=0):
     '''
     Shear the solid
+    :param xy: Shear along X-axis as function of y
+    :param xz: Shear along X-axis as function of z
+    :param yx: Shear along Y-axis as function of x
+    :param yz: Shear along Y-axis as function of z
+    :param zx: Shear along Z-axis as function of x
+    :param zy: Shear along Z-axis as function of y
     '''
     xform = gp_Trsf()
     xform.SetValues(
