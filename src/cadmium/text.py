@@ -105,39 +105,32 @@ class Glyph(Solid):
         return bodies[0]['prism'].Shape()
       elif len(bodies) > 1:
         final = None
+        positive_union = None
         for body in bodies:
-          if not final:
-            final = body
-          else:
-            if body['isClockwise'] and final['isClockwise']:
-              union = BRepAlgoAPI_Fuse(
-                body['prism'].Shape(), final['prism'].Shape())
-              final = dict(
-                prism = union,
-                isClockwise = 1
-              )
-            elif not body['isClockwise'] and final['isClockwise']:
-              sub = BRepAlgoAPI_Cut(
-                final['prism'].Shape(), body['prism'].Shape())
-              final = dict(
-                prism = sub,
-                isClockwise = 0
-              )
-            elif body['isClockwise'] and not final['isClockwise']:
-              sub = BRepAlgoAPI_Cut(
-                body['prism'].Shape(), final['prism'].Shape())
-              final = dict(
-                prism = sub,
-                isClockwise = 0
-              )
-            elif not body['isClockwise'] and not final['isClockwise']:
-              union = BRepAlgoAPI_Fuse(
-                body['prism'].Shape(), final['prism'].Shape())
-              final = dict(
-                prism = union,
-                isClockwise = 0
-              )
-        return final['prism'].Shape()
+          if body['isClockwise'] == 1:
+            if positive_union:
+              positive_union = BRepAlgoAPI_Fuse(
+                positive_union.Shape(), body['prism'].Shape())
+            else:
+              positive_union = body['prism']
+
+        negative_union = None
+        for body in bodies:
+          if body['isClockwise'] == 0:
+            if negative_union:
+              negative_union = BRepAlgoAPI_Fuse(
+                negative_union.Shape(), body['prism'].Shape())
+            else:
+              negative_union = body['prism']
+        
+        if positive_union and negative_union:
+          final = BRepAlgoAPI_Cut(
+            positive_union.Shape(), negative_union.Shape())
+        elif positive_union:
+          final = positive_union
+        elif negative_union:
+          final = negative_union
+        return final.Shape()
 
 class Text(Solid):
   _char_map_ = {
