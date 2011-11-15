@@ -33,9 +33,10 @@ class Glyph(Solid):
     if center:
       xmin_target = -(self.xspan/2)
       ymin_target = -(self.yspan/2)
-      #print xspan, yspan
-      #print xmin_target, ymin_target
       self.translate(x=(xmin_target-self.xmin), y=(ymin_target-self.ymin))
+
+    print self.xspan, '[',self.xmin,',',self.xmax,']','lsb',\
+      self.left_side_bearing,'rsb',self.right_side_bearing
 
   def update_extents(self, point):
     self.xmax = max(self.xmax, point.X())
@@ -197,6 +198,7 @@ class Text(Solid):
       glyph.right_side_bearing
     self.xspan = self.xmax - self.xmin
     self.right_side_bearing = glyph.right_side_bearing
+    print 'Merge: ',self.xspan,'[',self.xmin,',',self.xmax,']'
 
   def init_extents(self, glyph):
     self.xmin = glyph.xmin - glyph.left_side_bearing
@@ -204,11 +206,15 @@ class Text(Solid):
     self.xspan = self.xmax - self.xmin
     self.left_side_bearing = glyph.left_side_bearing
     self.right_side_bearing = glyph.right_side_bearing
+    print 'Init: ',self.xspan,'[',self.xmin,',',self.xmax,']'
 
   def centralize(self):
     xmin_target = -(self.xspan/2)
     dx = xmin_target - self.xmin
+    print dx
     self.instance.translate(x=dx)
+    self.xmin = xmin_target
+    self.xmax = self.xmin + self.xspan
 
   def __init__(self, text, fontpath, thickness=1, center=False):
 
@@ -216,9 +222,9 @@ class Text(Solid):
 
     self.instance = None
     for char in text:
-      if char > 'a' and char < 'z':
+      if char >= 'a' and char <= 'z':
         c = char
-      elif char > 'A' and char < 'Z':
+      elif char >= 'A' and char <= 'Z':
         c = char
       else:
         c = self._char_map_.get(char)
@@ -227,18 +233,18 @@ class Text(Solid):
         
       if self.instance:
         g = Glyph(c, font, thickness)
-        self.merge_extents(g)
         g.translate(x=(
           self.xspan/2 +\
           g.left_side_bearing +\
           g.xspan/2))
         self.instance += g
+        self.merge_extents(g)
         self.centralize()
       else:
         g = Glyph(c, font, thickness)
         self.init_extents(g)
         self.instance = g
-        self.centralize()
+        #self.centralize()
 
     Solid.__init__(self, self.instance)
   
