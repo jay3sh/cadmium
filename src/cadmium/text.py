@@ -35,8 +35,8 @@ class Glyph(Solid):
       ymin_target = -(self.yspan/2)
       self.translate(x=(xmin_target-self.xmin), y=(ymin_target-self.ymin))
 
-    print self.xspan, '[',self.xmin,',',self.xmax,']','lsb',\
-      self.left_side_bearing,'rsb',self.right_side_bearing
+    #print self.xspan, '[',self.xmin,',',self.xmax,']','lsb',\
+    #  self.left_side_bearing,'rsb',self.right_side_bearing
 
   def update_extents(self, point):
     self.xmax = max(self.xmax, point.X())
@@ -212,9 +212,9 @@ class Text(Solid):
     xmin_target = -(self.xspan/2)
     dx = xmin_target - self.xmin
     print dx
-    self.instance.translate(x=dx)
-    self.xmin = xmin_target
-    self.xmax = self.xmin + self.xspan
+    #self.instance.translate(x=dx)
+    #self.xmin = xmin_target
+    #self.xmax = self.xmin + self.xspan
 
   def __init__(self, text, fontpath, thickness=1, center=False):
 
@@ -232,19 +232,15 @@ class Text(Solid):
       if not c: continue
         
       if self.instance:
-        g = Glyph(c, font, thickness)
-        g.translate(x=(
-          self.xspan/2 +\
-          g.left_side_bearing +\
-          g.xspan/2))
+        g = Glyph(c, font, thickness, center=True)
+        g.translate(x=(self.width+g.left_side_bearing+(g.xspan/2)))
         self.instance += g
-        self.merge_extents(g)
-        self.centralize()
+        self.width += g.left_side_bearing+g.xspan+g.right_side_bearing
       else:
-        g = Glyph(c, font, thickness)
-        self.init_extents(g)
+        g = Glyph(c, font, thickness, center=True)
         self.instance = g
-        #self.centralize()
+        self.width = (g.xspan/2)+g.right_side_bearing
 
+      #self.centralize()
     Solid.__init__(self, self.instance)
   
