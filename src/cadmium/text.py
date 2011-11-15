@@ -23,14 +23,19 @@ class Glyph(Solid):
   ymin = INF
   zmax = -INF
   zmin = INF
-  def __init__(self, char, font, thickness):
-    print self.xmax, self.xmin
-    print self.ymax, self.ymin
-    print self.zmax, self.zmin
+  def __init__(self, char, font, thickness, center=False):
     self.font = font
     self.thickness = thickness
-    self.instance = self.char_to_solid(char)
-    Solid.__init__(self, self.instance)
+    Solid.__init__(self, self.char_to_solid(char))
+
+    self.xspan = self.xmax - self.xmin
+    self.yspan = self.ymax - self.ymin
+    if center:
+      xmin_target = -(self.xspan/2)
+      ymin_target = -(self.yspan/2)
+      #print xspan, yspan
+      #print xmin_target, ymin_target
+      self.translate(x=(xmin_target-self.xmin), y=(ymin_target-self.ymin))
 
   def update_extents(self, point):
     self.xmax = max(self.xmax, point.X())
@@ -51,6 +56,9 @@ class Glyph(Solid):
 
   def char_to_solid(self, c):
     glyph = self.font[c]
+
+    self.left_side_bearing = glyph.left_side_bearing
+    self.right_side_bearing = glyph.right_side_bearing
 
     layer = glyph.layers['Fore']
     bodies = []
@@ -131,6 +139,7 @@ class Glyph(Solid):
                 isClockwise = 0
               )
         return final['prism'].Shape()
+
 class Text(Solid):
   _char_map_ = {
     '!' : 'exclam',
@@ -176,8 +185,32 @@ class Text(Solid):
     '}' : 'braceright',
     '~' : 'asciitilde'
   }
+  xmax = -INF
+  xmin = INF
+  ymax = -INF
+  ymin = INF
+  zmax = -INF
+  zmin = INF
 
-  def __init__(self, text, fontpath, thickness=1):
+  def merge_extents(self, glyph):
+    self.xmax += glyph.left_side_bearing + glyph.xspan +\
+      glyph.right_side_bearing
+    self.xspan = self.xmax - self.xmin
+    self.right_side_bearing = glyph.right_side_bearing
+
+  def init_extents(self, glyph):
+    self.xmin = glyph.xmin - glyph.left_side_bearing
+    self.xmax = glyph.xmax + glyph.right_side_bearing
+    self.xspan = self.xmax - self.xmin
+    self.left_side_bearing = glyph.left_side_bearing
+    self.right_side_bearing = glyph.right_side_bearing
+
+  def centralize(self):
+    xmin_target = -(self.xspan/2)
+    dx = xmin_target - self.xmin
+    self.instance.translate(x=dx)
+
+  def __init__(self, text, fontpath, thickness=1, center=False):
 
     font = fontforge.open(fontpath)
 
@@ -193,12 +226,19 @@ class Text(Solid):
       if not c: continue
         
       if self.instance:
-        #self.instance = BRepAlgoAPI_Fuse(
-        #  self.instance.Shape(), self.char_to_solid(c))
-        self.instance += Glyph(c, font, thickness)
+        g = Glyph(c, font, thickness)
+        self.merge_extents(g)
+        g.translate(x=(
+          self.xspan/2 +\
+          g.left_side_bearing +\
+          g.xspan/2))
+        self.instance += g
+        self.centralize()
       else:
-        self.instance = Glyph(c, font, thickness)
-        #self.instance = self.char_to_solid(c)
+        g = Glyph(c, font, thickness)
+        self.init_extents(g)
+        self.instance = g
+        self.centralize()
 
     Solid.__init__(self, self.instance)
   
