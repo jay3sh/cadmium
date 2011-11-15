@@ -35,9 +35,6 @@ class Glyph(Solid):
       ymin_target = -(self.yspan/2)
       self.translate(x=(xmin_target-self.xmin), y=(ymin_target-self.ymin))
 
-    #print self.xspan, '[',self.xmin,',',self.xmax,']','lsb',\
-    #  self.left_side_bearing,'rsb',self.right_side_bearing
-
   def update_extents(self, point):
     self.xmax = max(self.xmax, point.X())
     self.xmin = min(self.xmin, point.X())
@@ -58,6 +55,7 @@ class Glyph(Solid):
   def char_to_solid(self, c):
     glyph = self.font[c]
 
+    self.bbox = glyph.boundingBox()
     self.left_side_bearing = glyph.left_side_bearing
     self.right_side_bearing = glyph.right_side_bearing
 
@@ -234,10 +232,15 @@ class Text(Solid):
       if self.instance:
         g = Glyph(c, font, thickness, center=True)
         g.translate(x=(self.width+g.left_side_bearing+(g.xspan/2)))
+        ymax_target = g.bbox[3]
+        g.translate(y=(ymax_target-g.yspan/2))
+
         self.instance += g
         self.width += g.left_side_bearing+g.xspan+g.right_side_bearing
       else:
         g = Glyph(c, font, thickness, center=True)
+        ymax_target = g.bbox[3]
+        g.translate(y=(ymax_target-g.yspan/2))
         self.instance = g
         self.width = (g.xspan/2)+g.right_side_bearing
 
