@@ -67,6 +67,10 @@ class Glyph(Solid):
       total = len(contour)
       curve_points = []
 
+      if total <= 2:
+        # Can't make solid out of 1 or 2 points
+        continue
+
       wire = BRepBuilderAPI_MakeWire()
       for point in contour:
         if point.on_curve:
