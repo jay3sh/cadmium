@@ -191,11 +191,33 @@ class Text(Solid):
   zmax = -INF
   zmin = INF
 
-  def centralize(self):
-    xmin_target = -(self.xspan/2)
-    dx = xmin_target - self.xmin
+  def update_extents(self, glyph):
+    self.xmax += glyph.left_side_bearing + \
+      glyph.xspan + glyph.right_side_bearing
+    self.xspan = self.xmax - self.xmin
+    self.ymax = max(self.ymax, glyph.ymax)
+    self.ymin = min(self.ymin, glyph.ymin)
+    self.yspan = self.ymax - self.ymin
 
-  def __init__(self, text, fontpath, thickness=1, center=False):
+  def init_extents(self, glyph):
+    self.xmin = glyph.xmin - glyph.left_side_bearing
+    self.xmax = glyph.xmax + glyph.right_side_bearing
+    self.xspan = self.xmax - self.xmin
+    self.ymin = glyph.ymin
+    self.ymax = glyph.ymax
+    self.yspan = self.ymax - self.ymin
+    
+  def centralize(self):
+    xmin_target = self.xspan/2
+    ymin_target = self.yspan/2
+    self.centerTranslation = (xmin_target-self.xmin,ymin_target-self.ymin,0)
+    self.translate(delta=self.centerTranslation)
+
+  def __init__(self, text, fontpath, thickness=1,
+    width=0, height=0, center=False):
+
+    if width and height:
+      raise Exception('Both height and width cannot be honored')
 
     font = fontforge.open(fontpath)
 
@@ -218,13 +240,25 @@ class Text(Solid):
 
         self.instance += g
         self.width += g.left_side_bearing+g.xspan+g.right_side_bearing
+        self.update_extents(g)
       else:
         g = Glyph(c, thickness, font=font, center=True)
         ymax_target = g.bbox[3]
         g.translate(y=(ymax_target-g.yspan/2))
         self.instance = g
         self.width = (g.xspan/2)+g.right_side_bearing
+        self.init_extents(g)
 
-      #self.centralize()
     Solid.__init__(self, self.instance)
+
+    self.centralize()
+
+    if width:
+      scale = width*1.0/self.xspan
+      self.scale(scale=scale)
+
+    if height:
+      scale = height*1.0/self.yspan
+      self.scale(scale=scale)
+    
   
