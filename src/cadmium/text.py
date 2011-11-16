@@ -23,6 +23,7 @@ class Glyph(Solid):
   ymin = INF
   zmax = -INF
   zmin = INF
+
   def __init__(self, char, thickness, font=None, fontpath=None, center=False):
     if font:
       self.font = font
@@ -99,7 +100,7 @@ class Glyph(Solid):
         i += 1
 
       face = BRepBuilderAPI_MakeFace(wire.Wire())
-      extrusion_vector = gp_Vec(0, 0, 100)
+      extrusion_vector = gp_Vec(0, 0, self.thickness)
       prism = BRepPrimAPI_MakePrism(face.Shape(), extrusion_vector)
 
       bodies.append(dict(
@@ -213,13 +214,41 @@ class Text(Solid):
     self.centerTranslation = (xmin_target-self.xmin,ymin_target-self.ymin,0)
     self.translate(delta=self.centerTranslation)
 
+  def dimension_estimate(self):
+    width = 0
+    ymin = INF
+    ymax = -INF
+    for char in self.text: 
+      if char >= 'a' and char <= 'z':
+        c = char
+      elif char >= 'A' and char <= 'Z':
+        c = char
+      else:
+        c = self._char_map_.get(char)
+      
+      if not c: continue
+      glyph = self.font[c]
+      bbox = glyph.boundingBox()
+      width += (bbox[2] - bbox[0])
+      ymin = min(bbox[1], ymin)
+      ymax = max(bbox[3], ymax)
+    return (width, (ymax-ymin))
+
   def __init__(self, text, fontpath, thickness=1,
     width=0, height=0, center=False):
 
     if width and height:
       raise Exception('Both height and width cannot be honored')
 
-    font = fontforge.open(fontpath)
+    self.text = text
+    self.font = fontforge.open(fontpath)
+
+    twidth, theight = self.dimension_estimate()
+    if width:
+      scale = width * 1.0 / twidth
+    if height:
+      scale = height * 1.0 / theight
+    adjusted_thickness = thickness / scale
 
     self.instance = None
     for char in text:
@@ -233,7 +262,7 @@ class Text(Solid):
       if not c: continue
         
       if self.instance:
-        g = Glyph(c, thickness, font=font, center=True)
+        g = Glyph(c, adjusted_thickness, font=self.font, center=True)
         g.translate(x=(self.width+g.left_side_bearing+(g.xspan/2)))
         ymax_target = g.bbox[3]
         g.translate(y=(ymax_target-g.yspan/2))
@@ -242,7 +271,7 @@ class Text(Solid):
         self.width += g.left_side_bearing+g.xspan+g.right_side_bearing
         self.update_extents(g)
       else:
-        g = Glyph(c, thickness, font=font, center=True)
+        g = Glyph(c, adjusted_thickness, font=self.font, center=True)
         ymax_target = g.bbox[3]
         g.translate(y=(ymax_target-g.yspan/2))
         self.instance = g
