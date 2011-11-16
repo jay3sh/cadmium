@@ -3,6 +3,9 @@
 # Copyright (C) 2011 Jayesh Salvi [jayesh <at> 3dtin <dot> com]
 #
 
+import os
+import math
+
 import fontforge
 from OCC.gp import gp_Pnt, gp_Vec
 from OCC.TColgp import TColgp_Array1OfPnt
@@ -13,7 +16,7 @@ from OCC.BRepPrimAPI import BRepPrimAPI_MakePrism
 from OCC.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
 
 from cadmium.solid import Solid
-import math
+
 INF = math.tan(math.pi/2) # infinity
 
 class Glyph(Solid):
@@ -141,6 +144,8 @@ class Glyph(Solid):
         return final.Shape()
 
 class Text(Solid):
+  _font_dir_ = os.path.join(os.environ['HOME'],'.cadmium','fonts')
+  _abs_fontpath_allowed_ = True
   _char_map_ = {
     '!' : 'exclam',
     '"' : 'quotedbl',
@@ -234,6 +239,17 @@ class Text(Solid):
       ymax = max(bbox[3], ymax)
     return (width, (ymax-ymin))
 
+  def load_font(self, fontpath):
+    if fontpath.find('/') >= 0 and self._abs_fontpath_allowed_:
+      return fontforge.open(fontpath)
+    else:
+      # Lookup in fonts directory
+      if os.path.exists(self._font_dir_):
+        available_fonts = os.listdir(self._font_dir_)
+        if fontpath in available_fonts:
+          return fontforge.open(os.path.join(self._font_dir_,fontpath))
+    raise Exception('Font not found')
+
   def __init__(self, text, fontpath, thickness=1,
     width=0, height=0, center=False):
 
@@ -241,7 +257,8 @@ class Text(Solid):
       raise Exception('Both height and width cannot be honored')
 
     self.text = text
-    self.font = fontforge.open(fontpath)
+
+    self.font = self.load_font(fontpath)
 
     twidth, theight = self.dimension_estimate()
     if width:
