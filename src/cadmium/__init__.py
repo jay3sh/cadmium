@@ -14,6 +14,7 @@ import primitives.box
 import primitives.cone
 import primitives.wedge
 import primitives.torus
+import text
 
 Cylinder = primitives.cylinder.Cylinder
 Sphere = primitives.sphere.Sphere
@@ -21,6 +22,8 @@ Box = primitives.box.Box
 Cone = primitives.cone.Cone
 Wedge = primitives.wedge.Wedge
 Torus = primitives.torus.Torus
+Glyph = text.Glyph
+Text = text.Text
 
 Solid = solid.Solid
 

@@ -23,8 +23,11 @@ class Glyph(Solid):
   ymin = INF
   zmax = -INF
   zmin = INF
-  def __init__(self, char, font, thickness, center=False):
-    self.font = font
+  def __init__(self, char, thickness, font=None, fontpath=None, center=False):
+    if font:
+      self.font = font
+    elif fontpath:
+      self.font = fontforge.open(fontpath)
     self.thickness = thickness
     Solid.__init__(self, self.char_to_solid(char))
 
@@ -188,28 +191,9 @@ class Text(Solid):
   zmax = -INF
   zmin = INF
 
-  def merge_extents(self, glyph):
-    self.xmax += glyph.left_side_bearing + glyph.xspan +\
-      glyph.right_side_bearing
-    self.xspan = self.xmax - self.xmin
-    self.right_side_bearing = glyph.right_side_bearing
-    print 'Merge: ',self.xspan,'[',self.xmin,',',self.xmax,']'
-
-  def init_extents(self, glyph):
-    self.xmin = glyph.xmin - glyph.left_side_bearing
-    self.xmax = glyph.xmax + glyph.right_side_bearing
-    self.xspan = self.xmax - self.xmin
-    self.left_side_bearing = glyph.left_side_bearing
-    self.right_side_bearing = glyph.right_side_bearing
-    print 'Init: ',self.xspan,'[',self.xmin,',',self.xmax,']'
-
   def centralize(self):
     xmin_target = -(self.xspan/2)
     dx = xmin_target - self.xmin
-    print dx
-    #self.instance.translate(x=dx)
-    #self.xmin = xmin_target
-    #self.xmax = self.xmin + self.xspan
 
   def __init__(self, text, fontpath, thickness=1, center=False):
 
@@ -227,7 +211,7 @@ class Text(Solid):
       if not c: continue
         
       if self.instance:
-        g = Glyph(c, font, thickness, center=True)
+        g = Glyph(c, thickness, font=font, center=True)
         g.translate(x=(self.width+g.left_side_bearing+(g.xspan/2)))
         ymax_target = g.bbox[3]
         g.translate(y=(ymax_target-g.yspan/2))
@@ -235,7 +219,7 @@ class Text(Solid):
         self.instance += g
         self.width += g.left_side_bearing+g.xspan+g.right_side_bearing
       else:
-        g = Glyph(c, font, thickness, center=True)
+        g = Glyph(c, thickness, font=font, center=True)
         ymax_target = g.bbox[3]
         g.translate(y=(ymax_target-g.yspan/2))
         self.instance = g
