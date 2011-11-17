@@ -60,7 +60,7 @@ class Glyph(Solid):
     wire.Add(me.Edge())
 
   def char_to_solid(self, c):
-    glyph = self.font[c]
+    glyph = self.font[str(c)]
 
     self.bbox = glyph.boundingBox()
     self.left_side_bearing = glyph.left_side_bearing
@@ -232,7 +232,7 @@ class Text(Solid):
         c = self._char_map_.get(char)
       
       if not c: continue
-      glyph = self.font[c]
+      glyph = self.font[str(c)]
       bbox = glyph.boundingBox()
       width += (bbox[2] - bbox[0])
       ymin = min(bbox[1], ymin)
@@ -261,6 +261,7 @@ class Text(Solid):
     self.font = self.load_font(fontpath)
 
     twidth, theight = self.dimension_estimate()
+    scale = 1
     if width:
       scale = width * 1.0 / twidth
     if height:

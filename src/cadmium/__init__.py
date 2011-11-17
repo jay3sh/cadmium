@@ -36,6 +36,8 @@ A_MIN = 1
 A_MAX = 2
 A_CENTER = 3
 
+# Custom data type
+enum = 1
 
 #
 # Annotation decorators
