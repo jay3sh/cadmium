@@ -14,6 +14,7 @@ from OCC import StlAPI
 from OCC.BRepAlgoAPI import *
 from OCC.BRepBuilderAPI import *
 from OCC.gp import *
+from OCC import Bnd, BRepBndLib
 
 from OCC.Utils.Topology import *
 from OCC.TopoDS import *
@@ -72,6 +73,17 @@ class Solid():
       else:
           print 'Not valid!'
           return False
+
+  def getBoundingBox(self):
+    '''
+    Returns Bounding Box of this solid
+
+    The bounds are returns in an array [xmin, ymin, zmin, xmax, ymax, zmax]
+    '''
+    box = Bnd.Bnd_Box();
+    b = BRepBndLib.BRepBndLib();
+    b.Add(self.shape, box);
+    return box.Get()
 
   def _vtxkey(self, v):
     return '%.4f_%.4f_%.4f'%(v[0], v[1], v[2])
