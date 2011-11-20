@@ -224,10 +224,15 @@ class Text(Solid):
     ymin = INF
     ymax = -INF
     for char in self.text: 
+      c = None
       if char >= 'a' and char <= 'z':
         c = char
       elif char >= 'A' and char <= 'Z':
         c = char
+      elif char == ' ':
+        space = self.font['space']
+        space_width = space.left_side_bearing + space.right_side_bearing
+        width += space_width
       else:
         c = self._char_map_.get(char)
       
@@ -270,10 +275,16 @@ class Text(Solid):
 
     self.instance = None
     for char in text:
+      c = None
       if char >= 'a' and char <= 'z':
         c = char
       elif char >= 'A' and char <= 'Z':
         c = char
+      elif char == ' ':
+        space = self.font['space']
+        space_width = space.left_side_bearing + space.right_side_bearing
+        self.width += space_width
+        self.xmax += space_width
       else:
         c = self._char_map_.get(char)
       
