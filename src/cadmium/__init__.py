@@ -14,7 +14,7 @@ import primitives.box
 import primitives.cone
 import primitives.wedge
 import primitives.torus
-import text
+import primitives.text
 
 Cylinder = primitives.cylinder.Cylinder
 Sphere = primitives.sphere.Sphere
@@ -22,10 +22,15 @@ Box = primitives.box.Box
 Cone = primitives.cone.Cone
 Wedge = primitives.wedge.Wedge
 Torus = primitives.torus.Torus
-Glyph = text.Glyph
-Text = text.Text
+Glyph = primitives.text.Glyph
+Text = primitives.text.Text
 
 Solid = solid.Solid
+
+inspectionData = {
+  'solidData' : {},
+  'paramData' : {}
+}
 
 # Value range constants
 POSITIVE = 1
@@ -43,13 +48,50 @@ enum = 1
 # Annotation decorators
 #
 def description(*arg, **kwdArg):
-  def decorator(func):
-    return func
+
+  validArgs = ['shortName','summary', 'alignment']
+  for k in kwdArg.keys():
+    if not(k in validArgs):
+      raise Exception('Invalid argument '+str(k))
+
+  if arg:
+    raise Exception('Only named arguments supported')
+
+  import cadmium
+  cadmium.inspectionData['solidData'] = kwdArg
+
+  def decorator(func): return func
   return decorator
 
 def param(*arg, **kwdArg):
-  def decorator(func):
-    return func
+
+  validArgs = ['name','shortName','description',
+    'valueRange','valueType','invalidValues','validValues']
+  for k in kwdArg.keys():
+    if not(k in validArgs):
+      raise Exception('Invalid argument '+str(k))
+
+  if arg:
+    raise Exception('Only named arguments supported')
+
+  import cadmium
+  if kwdArg.has_key('valueType'):
+    if kwdArg['valueType'] == int:
+      kwdArg['valueType'] = 'int'
+    elif kwdArg['valueType'] == float:
+      kwdArg['valueType'] = 'float'
+    elif kwdArg['valueType'] == str:
+      kwdArg['valueType'] = 'str'
+    elif kwdArg['valueType'] == bool:
+      kwdArg['valueType'] = 'bool'
+    elif kwdArg['valueType'] == cadmium.enum:
+      kwdArg['valueType'] = 'enum'
+    else:
+      kwdArg['valueType'] = 'unknown'
+
+  cadmium.inspectionData['paramData'][kwdArg['name']] = kwdArg
+
+  def decorator(func): return func
   return decorator
 
 class CadmiumException(BaseException):
