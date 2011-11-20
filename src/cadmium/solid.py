@@ -57,7 +57,7 @@ class Solid():
     subtraction = BRepAlgoAPI_Cut(self.shape, other.shape).Shape()
     return Solid(subtraction)
 
-  def triangle_is_valid(self, P1,P2,P3):
+  def _triangle_is_valid(self, P1,P2,P3):
       ''' check wether a triangle is or not valid
       '''
       V1 = gp_Vec(P1,P2)
@@ -107,7 +107,7 @@ class Solid():
     self.faces = []
     self.vertices = []
 
-  def compress_write(self, filename):
+  def _compress_write(self, filename):
     vstr = '['+','.join(map(lambda x: '[%.2f,%.2f,%.2f]'%\
       (x[0],x[1],x[2]), self.vertices))+']'
     fstr = '['+','.join(map(lambda x: '[%d,%d,%d]'%\
@@ -125,7 +125,7 @@ class Solid():
     compressed.close()
     os.remove(filename+'.plain')
 
-  def build_mesh(self, precision=0.01):
+  def _build_mesh(self, precision=0.01):
     self._reset_mesh()
     BRepMesh_Mesh(self.shape, precision)
     faces_iterator = Topo(self.shape).faces()
@@ -150,14 +150,14 @@ class Solid():
         p2_coord = P2.XYZ().Coord()
         p3_coord = P3.XYZ().Coord()
 
-        if self.triangle_is_valid(P1, P2, P3):
+        if self._triangle_is_valid(P1, P2, P3):
           i1 = self._save_vertex(p1_coord)
           i2 = self._save_vertex(p2_coord)
           i3 = self._save_vertex(p3_coord)
           self._save_face([i1,i2,i3])
 
   def getMesh(self, precision=0.01):
-    self.build_mesh(precision)
+    self._build_mesh(precision)
     return { 'vertices':self.vertices, 'faces':self.faces }
 
   def toJSON(self, filename, compress=False, precision=0.01):
@@ -169,10 +169,10 @@ class Solid():
     :param precision: Provides control over quality of exported mesh. Higher the precision value, lower the accuracy of exported mesh, smaller the size of exported file. Lower the precision value, more accurate the exported mesh, bigger the size of exported file.
     :type precision: float
     '''
-    self.build_mesh(precision)
+    self._build_mesh(precision)
 
     if compress:
-      self.compress_write(filename)
+      self._compress_write(filename)
     else:
       open(filename, 'w').write(json.dumps({
         'vertices':self.vertices,'faces':self.faces}))
