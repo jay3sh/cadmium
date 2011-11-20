@@ -113,15 +113,7 @@ class Solid():
     compressed.close()
     os.remove(filename+'.plain')
 
-  def toJSON(self, filename, compress=False, precision=0.01):
-    '''
-    Writes JSON representation of the mesh
-
-    :param filename: Path of the file to write JSON to
-    :type filename: str
-    :param precision: Provides control over quality of exported mesh. Higher the precision value, lower the accuracy of exported mesh, smaller the size of exported file. Lower the precision value, more accurate the exported mesh, bigger the size of exported file.
-    :type precision: float
-    '''
+  def build_mesh(self, precision=0.01):
     self._reset_mesh()
     BRepMesh_Mesh(self.shape, precision)
     faces_iterator = Topo(self.shape).faces()
@@ -152,11 +144,27 @@ class Solid():
           i3 = self._save_vertex(p3_coord)
           self._save_face([i1,i2,i3])
 
+  def getMesh(self, precision=0.01):
+    self.build_mesh(precision)
+    return { 'vertices':self.vertices, 'faces':self.faces }
+
+  def toJSON(self, filename, compress=False, precision=0.01):
+    '''
+    Writes JSON representation of the mesh
+
+    :param filename: Path of the file to write JSON to
+    :type filename: str
+    :param precision: Provides control over quality of exported mesh. Higher the precision value, lower the accuracy of exported mesh, smaller the size of exported file. Lower the precision value, more accurate the exported mesh, bigger the size of exported file.
+    :type precision: float
+    '''
+    self.build_mesh(precision)
+
     if compress:
       self.compress_write(filename)
     else:
       open(filename, 'w').write(json.dumps({
         'vertices':self.vertices,'faces':self.faces}))
+
 
   def center(self):
     '''
