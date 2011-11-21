@@ -35,26 +35,18 @@ class Glyph(Solid):
     self.thickness = thickness
     Solid.__init__(self, self.char_to_solid(char))
 
-    self.xspan = self.xmax - self.xmin
-    self.yspan = self.ymax - self.ymin
-    if center:
-      xmin_target = -(self.xspan/2)
-      ymin_target = -(self.yspan/2)
-      self.translate(x=(xmin_target-self.xmin), y=(ymin_target-self.ymin))
-
-  def update_extents(self, point):
-    self.xmax = max(self.xmax, point.X())
-    self.xmin = min(self.xmin, point.X())
-    self.ymax = max(self.ymax, point.Y())
-    self.ymin = min(self.ymin, point.Y())
-    self.zmax = max(self.zmax, point.Z())
-    self.zmin = min(self.zmin, point.Z())
+    xmin, ymin, zmin, xmax, ymax, zmax = self.getBoundingBox()
+    self.xspan = xmax - xmin
+    self.yspan = ymax - ymin
+    self.zspan = zmax - zmin
+    self.centerTranslation = \
+      ((-self.xspan/2.)-xmin, (-self.yspan/2.)-ymin, (-self.zspan/2.)-zmin)
+    self.translate(delta=self.centerTranslation)
 
   def add_to_wire(self, points, wire):
     array=TColgp_Array1OfPnt(1, len(points))
     for i in range(len(points)):
       array.SetValue(i+1, points[i])
-      self.update_extents(points[i])
     curve = Geom_BezierCurve(array)
     me = BRepBuilderAPI_MakeEdge(curve.GetHandle())    
     wire.Add(me.Edge())
