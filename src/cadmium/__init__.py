@@ -66,7 +66,7 @@ def description(*arg, **kwdArg):
 def param(*arg, **kwdArg):
 
   validArgs = ['name','shortName','description',
-    'valueRange','valueType','invalidValues','validValues']
+    'valueRange','valueType','invalidValues','validValues','endpointInclusion']
   for k in kwdArg.keys():
     if not(k in validArgs):
       raise Exception('Invalid argument '+str(k))
