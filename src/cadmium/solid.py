@@ -23,6 +23,7 @@ from OCC.TopAbs import *
 # For generating Triangle Mesh
 from OCC.BRepMesh import *
 from OCC.BRep import *
+from OCC.BRepTools import BRepTools
 
 from OCC.Precision import *
 
@@ -317,3 +318,9 @@ class Solid():
     stl_writer.SetASCIIMode(ascii)
     stl_writer.SetDeflection(deflection)
     stl_writer.Write(self.shape, filename)
+
+  def toBREP(self, filename):
+    BRepTools().Write(self.shape, filename)
+
+  def fromBREP(self, filename):
+    BRepTools().Read(self.shape, filename, BRep_Builder())
