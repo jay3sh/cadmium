@@ -101,3 +101,6 @@ class CadmiumException(BaseException):
   def __init__(self, msg):
     self.msg = msg
     BaseException.__init__(self, msg)
+
+def garbage_collect():
+  GarbageCollector.garbage.smart_purge()
