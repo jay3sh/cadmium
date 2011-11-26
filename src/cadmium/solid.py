@@ -32,10 +32,13 @@ class Solid():
   Base class for all solids (Primitive and Custom). It's created by passing in Shape as argument.
   '''
   def __init__(self, s=None):
-    if type(s) == TopoDS_Shape:
-      self.shape = s
+    if s:
+      if type(s) == TopoDS_Shape:
+        self.shape = s
+      else:
+        self.shape = s.shape
     else:
-      self.shape = s.shape
+      self.shape = TopoDS_Shape()
 
   def __add__(self, other):
     '''
