@@ -265,14 +265,13 @@ class Solid():
       xform.SetScale(reference, scale);
       brep = BRepBuilderAPI_Transform(self.shape, xform, False)
     else:
-      xform = gp_Trsf()
-      xform.SetValues(
-        scaleX, 0, 0, 0,
-        0, scaleY, 0, 0,
-        0, 0, scaleZ, 0,
-        Precision_Angular(), Precision_Confusion()
-      );
-      brep = BRepBuilderAPI_GTransform(self.shape, gp_GTrsf(xform), False)
+      xform = gp_GTrsf()
+      xform.SetVectorialPart(gp_Mat(
+        scaleX, 0, 0,
+        0, scaleY, 0,
+        0, 0, scaleZ,
+      ))
+      brep = BRepBuilderAPI_GTransform(self.shape, xform, False)
     brep.Build()
     self.shape = brep.Shape()
     return self
