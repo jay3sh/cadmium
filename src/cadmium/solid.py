@@ -256,7 +256,7 @@ class Solid():
     self.shape = brep.Shape()
     return self
 
-  def scale(self, scale=1, scaleX=1, scaleY=1, scaleZ=1, reference=None):
+  def scale(self, scale=1, scaleX=1, scaleY=1, scaleZ=1):
     '''
     Scale the solid. Either provide scale parameter for uniform scaling along 
     all axis. If scale is not provided, but one of scaleX,scaleY,scaleZ is 
@@ -271,19 +271,16 @@ class Solid():
     :param scaleZ: Scale factor along Z
     :type scaleZ: float
     '''
-    if not reference: reference = self.center()
     if scale != 1:
-      xform = gp_Trsf()
-      xform.SetScale(reference, scale);
-      brep = BRepBuilderAPI_Transform(self.shape, xform, False)
-    else:
-      xform = gp_GTrsf()
-      xform.SetVectorialPart(gp_Mat(
-        scaleX, 0, 0,
-        0, scaleY, 0,
-        0, 0, scaleZ,
-      ))
-      brep = BRepBuilderAPI_GTransform(self.shape, xform, False)
+      scaleX = scaleY = scaleZ = scale
+
+    xform = gp_GTrsf()
+    xform.SetVectorialPart(gp_Mat(
+      scaleX, 0, 0,
+      0, scaleY, 0,
+      0, 0, scaleZ,
+    ))
+    brep = BRepBuilderAPI_GTransform(self.shape, xform, False)
     brep.Build()
     self.shape = brep.Shape()
     return self
