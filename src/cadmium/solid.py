@@ -322,7 +322,17 @@ class Solid():
     stl_writer.Write(self.shape, filename)
 
   def toBREP(self, filename):
+    '''
+    Write BREP output of the solid
+
+    :param filename: Path of the file to write BREP to
+    '''
     BRepTools().Write(self.shape, filename)
 
   def fromBREP(self, filename):
+    '''
+    Load ths solid from BREP file
+
+    :param filename: Path of the file to read BREP from
+    '''
     BRepTools().Read(self.shape, filename, BRep_Builder())
