@@ -28,5 +28,7 @@ Primitive Solids
 
 .. autoclass:: Torus
 
+.. autoclass:: Glyph
 
+.. autoclass:: Text
 
