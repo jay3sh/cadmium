@@ -10,13 +10,6 @@ from cadmium.solid import Solid
 class Box(Solid):
   
   def __init__(self, x=10, y=10, z=10, center=False):
-
-    if center:
-      self.centerTranslation = (-x/2.0, -y/2.0, -z/2.0)
-    else:
-      self.centerTranslation = (0,0,0)
-
     self.instance = BRepPrimAPI_MakeBox(x,y,z)
-    Solid.__init__(self, self.instance.Shape())
-    self.translate(delta=self.centerTranslation)
+    Solid.__init__(self, self.instance.Shape(), center=center)
     

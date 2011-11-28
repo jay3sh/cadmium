@@ -31,7 +31,7 @@ class Solid():
   '''
   Base class for all solids (Primitive and Custom). It's created by passing in Shape as argument.
   '''
-  def __init__(self, s=None):
+  def __init__(self, s=None, center=False):
     if s:
       if type(s) == TopoDS_Shape:
         self.shape = s
@@ -39,6 +39,9 @@ class Solid():
         self.shape = s.shape
     else:
       self.shape = TopoDS_Shape()
+
+    self.centerTranslation = [0,0,0]
+    if center: self.centralize()
 
   def __add__(self, other):
     '''
@@ -88,6 +91,15 @@ class Solid():
     b = BRepBndLib.BRepBndLib();
     b.Add(self.shape, box);
     return box.Get()
+
+  def centralize(self):
+    xmin, ymin, zmin, xmax, ymax, zmax = self.getBoundingBox()
+    xspan = xmax - xmin
+    yspan = ymax - ymin
+    zspan = zmax - zmin
+    self.centerTranslation = \
+      ((-xspan/2.)-xmin, (-yspan/2.)-ymin, (-zspan/2.)-zmin)
+    self.translate(delta=self.centerTranslation)
 
   def _vtxkey(self, v):
     return '%.4f_%.4f_%.4f'%(v[0], v[1], v[2])
@@ -244,7 +256,7 @@ class Solid():
     self.shape = brep.Shape()
     return self
 
-  def scale(self, scale=1, scaleX=1, scaleY=1, scaleZ=1, reference=None):
+  def scale(self, scale=1, scaleX=1, scaleY=1, scaleZ=1):
     '''
     Scale the solid. Either provide scale parameter for uniform scaling along 
     all axis. If scale is not provided, but one of scaleX,scaleY,scaleZ is 
@@ -259,19 +271,16 @@ class Solid():
     :param scaleZ: Scale factor along Z
     :type scaleZ: float
     '''
-    if not reference: reference = self.center()
     if scale != 1:
-      xform = gp_Trsf()
-      xform.SetScale(reference, scale);
-      brep = BRepBuilderAPI_Transform(self.shape, xform, False)
-    else:
-      xform = gp_GTrsf()
-      xform.SetVectorialPart(gp_Mat(
-        scaleX, 0, 0,
-        0, scaleY, 0,
-        0, 0, scaleZ,
-      ))
-      brep = BRepBuilderAPI_GTransform(self.shape, xform, False)
+      scaleX = scaleY = scaleZ = scale
+
+    xform = gp_GTrsf()
+    xform.SetVectorialPart(gp_Mat(
+      scaleX, 0, 0,
+      0, scaleY, 0,
+      0, 0, scaleZ,
+    ))
+    brep = BRepBuilderAPI_GTransform(self.shape, xform, False)
     brep.Build()
     self.shape = brep.Shape()
     return self

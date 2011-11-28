@@ -33,15 +33,7 @@ class Glyph(Solid):
     elif fontpath:
       self.font = fontforge.open(fontpath)
     self.thickness = thickness
-    Solid.__init__(self, self.char_to_solid(char))
-
-    xmin, ymin, zmin, xmax, ymax, zmax = self.getBoundingBox()
-    self.xspan = xmax - xmin
-    self.yspan = ymax - ymin
-    self.zspan = zmax - zmin
-    self.centerTranslation = \
-      ((-self.xspan/2.)-xmin, (-self.yspan/2.)-ymin, (-self.zspan/2.)-zmin)
-    self.translate(delta=self.centerTranslation)
+    Solid.__init__(self, self.char_to_solid(char), center=center)
 
   def add_to_wire(self, points, wire):
     array=TColgp_Array1OfPnt(1, len(points))
