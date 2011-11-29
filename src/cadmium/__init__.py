@@ -52,7 +52,7 @@ _font_dir_ = os.path.join(os.environ['HOME'],'.cadmium','fonts')
 _abs_fontpath_allowed_ = True
 
 if not os.path.exists(_brep_cache_path_):
-  os.mkdirs(_brep_cache_path_)
+  os.makedirs(_brep_cache_path_)
 
 #
 # Annotation decorators
