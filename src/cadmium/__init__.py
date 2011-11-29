@@ -2,6 +2,8 @@
 Python library for Solid Modelling
 '''
 
+import os
+
 from OCC.gp import *
 X_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(1,0,0))
 Y_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(0,1,0))
@@ -43,6 +45,14 @@ A_CENTER = 3
 
 # Custom data type
 enum = 1
+
+_brep_cache_path_ = os.path.join(os.environ['HOME'],'.cadmium','brepcache')
+_brep_caching_enabled_ = True
+_font_dir_ = os.path.join(os.environ['HOME'],'.cadmium','fonts')
+_abs_fontpath_allowed_ = True
+
+if not os.path.exists(_brep_cache_path_):
+  os.mkdirs(_brep_cache_path_)
 
 #
 # Annotation decorators

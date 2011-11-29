@@ -5,6 +5,7 @@
 
 import os
 import math
+import hashlib
 
 import fontforge
 from OCC.gp import gp_Pnt, gp_Vec
@@ -16,6 +17,7 @@ from OCC.BRepPrimAPI import BRepPrimAPI_MakePrism
 from OCC.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
 
 from cadmium.solid import Solid
+import cadmium
 
 INF = math.tan(math.pi/2) # infinity
 
@@ -32,8 +34,28 @@ class Glyph(Solid):
       self.font = font
     elif fontpath:
       self.font = fontforge.open(fontpath)
+
+    self.char = char
+    self.center = center
+    glyph = self.font[str(char)]
+
     self.thickness = thickness
-    Solid.__init__(self, self.char_to_solid(char), center=center)
+    self.bbox = glyph.boundingBox()
+    self.left_side_bearing = glyph.left_side_bearing
+    self.right_side_bearing = glyph.right_side_bearing
+
+    if cadmium._brep_caching_enabled_:
+      breppath = os.path.join(cadmium._brep_cache_path_, self.get_signature())
+      if os.path.exists(breppath):
+        Solid.__init__(self, None)
+        self.fromBREP(breppath)
+      else:
+        Solid.__init__(self, self.char_to_solid(glyph), center=center)
+        self.toBREP(breppath)
+
+  def get_signature(self):
+    pathhash = hashlib.sha1(self.font.path).hexdigest()
+    return self.char+str(self.thickness)+pathhash+str(self.center)
 
   def add_to_wire(self, points, wire):
     array=TColgp_Array1OfPnt(1, len(points))
@@ -43,12 +65,7 @@ class Glyph(Solid):
     me = BRepBuilderAPI_MakeEdge(curve.GetHandle())    
     wire.Add(me.Edge())
 
-  def char_to_solid(self, c):
-    glyph = self.font[str(c)]
-
-    self.bbox = glyph.boundingBox()
-    self.left_side_bearing = glyph.left_side_bearing
-    self.right_side_bearing = glyph.right_side_bearing
+  def char_to_solid(self, glyph):
 
     layer = glyph.layers['Fore']
     bodies = []
@@ -128,8 +145,6 @@ class Glyph(Solid):
         return final.Shape()
 
 class Text(Solid):
-  _font_dir_ = os.path.join(os.environ['HOME'],'.cadmium','fonts')
-  _abs_fontpath_allowed_ = True
   _char_map_ = {
     '!' : 'exclam',
     '"' : 'quotedbl',
@@ -181,68 +196,23 @@ class Text(Solid):
   zmax = -INF
   zmin = INF
 
-  def centralize(self):
-    xmin, ymin, zmin, xmax, ymax, zmax = self.getBoundingBox()
-    xspan = xmax - xmin
-    yspan = ymax - ymin
-    zspan = zmax - zmin
-    self.centerTranslation = \
-      ((-xspan/2.)-xmin, (-yspan/2.)-ymin, (-zspan/2.)-zmin)
-    self.translate(delta=self.centerTranslation)
-
-  def dimension_estimate(self):
-    width = 0
-    ymin = INF
-    ymax = -INF
-    for char in self.text: 
-      c = None
-      if char >= 'a' and char <= 'z':
-        c = char
-      elif char >= 'A' and char <= 'Z':
-        c = char
-      elif char == ' ':
-        space = self.font['space']
-        space_width = space.left_side_bearing + space.right_side_bearing
-        width += space_width
-      else:
-        c = self._char_map_.get(char)
-      
-      if not c: continue
-      glyph = self.font[str(c)]
-      bbox = glyph.boundingBox()
-      width += (bbox[2] - bbox[0])
-      ymin = min(bbox[1], ymin)
-      ymax = max(bbox[3], ymax)
-    return (width, (ymax-ymin))
-
   def load_font(self, fontpath):
-    if fontpath.find('/') >= 0 and self._abs_fontpath_allowed_:
+    if fontpath.find('/') >= 0 and cadmium._abs_fontpath_allowed_:
       return fontforge.open(fontpath)
     else:
       # Lookup in fonts directory
-      if os.path.exists(self._font_dir_):
-        available_fonts = os.listdir(self._font_dir_)
+      if os.path.exists(cadmium._font_dir_):
+        available_fonts = os.listdir(cadmium._font_dir_)
         if fontpath in available_fonts:
-          return fontforge.open(os.path.join(self._font_dir_,fontpath))
+          return fontforge.open(os.path.join(cadmium._font_dir_, fontpath))
     raise Exception('Font not found')
 
   def __init__(self, text, fontpath, thickness=1,
     width=0, height=0, center=False):
 
-    if width and height:
-      raise Exception('Both height and width cannot be honored')
-
     self.text = text
 
     self.font = self.load_font(fontpath)
-
-    twidth, theight = self.dimension_estimate()
-    scale = 1
-    if width:
-      scale = width * 1.0 / twidth
-    if height:
-      scale = height * 1.0 / theight
-    adjusted_thickness = thickness / scale
 
     self.instance = None
     for char in text:
@@ -261,32 +231,38 @@ class Text(Solid):
       
       if not c: continue
         
+      g = Glyph(c, thickness=1, font=self.font, center=True)
+      g_xmin, g_ymin, g_zmin, g_xmax, g_ymax, g_zmax = g.getBoundingBox()
+      g_xspan = g_xmax - g_xmin
+      g_yspan = g_ymax - g_ymin
+      g_zspan = g_zmax - g_zmin
+
       if self.instance:
-        g = Glyph(c, adjusted_thickness, font=self.font, center=True)
-        g.translate(x=(self.width+g.left_side_bearing+(g.xspan/2)))
+        g.translate(x=(self.width+g.left_side_bearing+(g_xspan/2)))
         ymax_target = g.bbox[3]
-        g.translate(y=(ymax_target-g.yspan/2))
+        g.translate(y=(ymax_target-g_yspan/2))
 
         self.instance += g
-        self.width += g.left_side_bearing+g.xspan+g.right_side_bearing
+        self.width += g.left_side_bearing+g_xspan+g.right_side_bearing
       else:
-        g = Glyph(c, adjusted_thickness, font=self.font, center=True)
         ymax_target = g.bbox[3]
-        g.translate(y=(ymax_target-g.yspan/2))
+        g.translate(y=(ymax_target-g_yspan/2))
         self.instance = g
-        self.width = (g.xspan/2)+g.right_side_bearing
+        self.width = (g_xspan/2)+g.right_side_bearing
 
-    Solid.__init__(self, self.instance)
-
-    if center: self.centralize()
+    Solid.__init__(self, self.instance, center=center)
 
     xmin, ymin, zmin, xmax, ymax, zmax = self.getBoundingBox()
-    if width:
-      scale = width*1.0/(xmax-xmin)
-      self.scale(scale=scale)
+    if width and height:
+      self.scale(scaleX = width*1.0/(xmax-xmin),
+        scaleY = height*1.0/(ymax-ymin),
+        scaleZ = thickness)
+    elif (width and not height):
+      self.scale(scaleX = width*1.0/(xmax-xmin),
+        scaleY = width*1.0/(xmax-xmin),
+        scaleZ = thickness)
+    elif (height and not width):
+      self.scale(scaleX = height*1.0/(ymax-ymin),
+        scaleY = height*1.0/(ymax-ymin),
+        scaleZ = thickness)
 
-    if height:
-      scale = height*1.0/(ymax-ymin)
-      self.scale(scale=scale)
-    
-  
