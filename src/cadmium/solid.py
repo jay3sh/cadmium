@@ -193,29 +193,6 @@ class Solid():
       open(filename, 'w').write(json.dumps({
         'vertices':self.vertices,'faces':self.faces}))
 
-
-  def center(self):
-    '''
-    Returns center of the solid
-
-    This algo takes into consideration the initial center adjustment 
-    (if one was done). This adjustment is done in the constructor 
-    of primitive, based on its dimensions
-    '''
-    center = gp_Pnt(0,0,0)
-
-    if self.centerTranslation:
-      ct = self.centerTranslation
-      minus_ct = (-ct[0], -ct[1], -ct[2])
-      minusCenterTranslation = gp_Trsf()
-      minusCenterTranslation.SetTranslation(
-        gp_Vec(minus_ct[0],minus_ct[1],minus_ct[2]))
-      center.Transform(minusCenterTranslation)
-
-    xform = self.shape.Location().Transformation()
-    center.Transform(xform)
-    return center
-     
   def translate(self, x=0, y=0, z=0, delta=[0,0,0]):
     '''
     Translate the solid.
