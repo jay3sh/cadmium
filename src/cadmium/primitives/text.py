@@ -55,7 +55,7 @@ class Glyph(Solid):
         self.toBREP(breppath)
 
   def get_signature(self, *args, **kwds):
-    signature = ''
+    signature = self.__class__.__name__
     for arg in args:
       if type(arg) == str:
         signature += urllib.quote_plus(arg)
