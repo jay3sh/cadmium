@@ -5,7 +5,7 @@
 
 import os
 import math
-import hashlib
+import urllib
 
 import fontforge
 from OCC.gp import gp_Pnt, gp_Vec
@@ -45,7 +45,8 @@ class Glyph(Solid):
     self.right_side_bearing = glyph.right_side_bearing
 
     if cadmium._brep_caching_enabled_:
-      breppath = os.path.join(cadmium._brep_cache_path_, self.get_signature())
+      breppath = os.path.join(cadmium._brep_cache_path_,
+        self.get_signature(char,self.font.path,thickness,center))
       if os.path.exists(breppath):
         Solid.__init__(self, None)
         self.fromBREP(breppath)
@@ -53,9 +54,14 @@ class Glyph(Solid):
         Solid.__init__(self, self.char_to_solid(glyph), center=center)
         self.toBREP(breppath)
 
-  def get_signature(self):
-    pathhash = hashlib.sha1(self.font.path).hexdigest()
-    return self.char+str(self.thickness)+pathhash+str(self.center)
+  def get_signature(self, *args, **kwds):
+    signature = ''
+    for arg in args:
+      if type(arg) == str:
+        signature += urllib.quote_plus(arg)
+      else:
+        signature += str(arg)
+    return signature
 
   def add_to_wire(self, points, wire):
     array=TColgp_Array1OfPnt(1, len(points))
