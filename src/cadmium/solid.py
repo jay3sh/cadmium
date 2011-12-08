@@ -223,11 +223,16 @@ class Solid():
     Rotate the solid
 
     :param axis: One of three principal axes (cadmium.X_axis, cadmium.Y_axis, cadmium.Z_Axis)
+                 or a list of floats interpreted as vector
     :param angle: in Degrees
     :type angle: float
     '''
     xform = gp_Trsf()
-    xform.SetRotation(axis, angle*math_pi/180.0);
+    if type(axis) == type(cadmium.X_axis):
+      xform.SetRotation(axis, angle*math_pi/180.0);
+    else:
+      ax = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(axis[0],axis[1],axis[2]))
+      xform.SetRotation(ax, angle*math_pi/180.0);
     brep = BRepBuilderAPI_Transform(self.shape, xform, False)
     brep.Build()
     self.shape = brep.Shape()
