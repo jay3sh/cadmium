@@ -307,6 +307,10 @@ class Solid():
     stl_writer.SetDeflection(deflection)
     stl_writer.Write(self.shape, filename)
 
+  def fromSTL(self, filename):
+    self.shape = TopoDS_Shape()
+    stl_reader = StlAPI.StlAPI_Reader()
+    stl_reader.Read(self.shape, filename)
   def toBREP(self, filename):
     '''
     Write BREP output of the solid
