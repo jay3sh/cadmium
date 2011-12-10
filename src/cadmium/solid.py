@@ -240,8 +240,8 @@ class Solid():
 
   def reflect(self, vector):
     '''
-    Reflect the solid along the vector (Dimensions of the solid along the vector
-    remain unchanged)
+    Reflect the solid along the vector. Vector is the surface normal of the plane about which 
+    reflection is desired.
     :param vector: One of three principal axes (cadmium.X_axis, cadmium.Y_axis, cadmium.Z_Axis)
                  or a list of floats interpreted as vector
     '''
