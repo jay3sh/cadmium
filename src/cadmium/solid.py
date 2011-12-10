@@ -238,6 +238,27 @@ class Solid():
     self.shape = brep.Shape()
     return self
 
+  def reflect(self, vector):
+    '''
+    Reflect the solid along the vector (Dimensions of the solid along the vector
+    remain unchanged)
+    :param vector: One of three principal axes (cadmium.X_axis, cadmium.Y_axis, cadmium.Z_Axis)
+                 or a list of floats interpreted as vector
+    '''
+    x = -1 if vector is cadmium.X_axis else 1
+    y = -1 if vector is cadmium.Y_axis else 1
+    z = -1 if vector is cadmium.Z_axis else 1
+    xform = gp_GTrsf()
+    xform.SetVectorialPart(gp_Mat(
+      x, 0, 0,
+      0, y, 0,
+      0, 0, z,
+    ))
+    brep = BRepBuilderAPI_GTransform(self.shape, xform, False)
+    brep.Build()
+    self.shape = brep.Shape()
+    return self
+
   def scale(self, scale=1, scaleX=1, scaleY=1, scaleZ=1):
     '''
     Scale the solid. Either provide scale parameter for uniform scaling along 
