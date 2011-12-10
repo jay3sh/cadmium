@@ -13,12 +13,14 @@ import json
 from OCC import StlAPI
 from OCC.BRepAlgoAPI import *
 from OCC.BRepBuilderAPI import *
+from OCC.BRepFilletAPI import *
 from OCC.gp import *
 from OCC import Bnd, BRepBndLib
 
 from OCC.Utils.Topology import *
 from OCC.TopoDS import *
 from OCC.TopAbs import *
+from OCC.TopExp import TopExp_Explorer
 
 # For generating Triangle Mesh
 from OCC.BRepMesh import *
@@ -311,6 +313,23 @@ class Solid():
     self.shape = TopoDS_Shape()
     stl_reader = StlAPI.StlAPI_Reader()
     stl_reader.Read(self.shape, filename)
+
+  def addFillet(self):
+    fillet = BRepFilletAPI_MakeFillet(self.shape)
+    ex = TopExp_Explorer(self.shape,TopAbs_EDGE)
+    while ex.More():
+      e = TopoDS_edge(ex.Current())
+      fillet.Add(e)
+      ex.Next()
+
+    for i in range(1, fillet.NbContours()+1):
+      length = fillet.Length(i)
+      radius = 0.1 * length
+      fillet.SetRadius(radius, i, 1)
+
+    print fillet.IsDone()
+    self.shape = fillet.Shape()
+
   def toBREP(self, filename):
     '''
     Write BREP output of the solid
