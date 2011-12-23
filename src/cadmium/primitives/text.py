@@ -220,6 +220,7 @@ class Text(Solid):
 
     self.font = self.load_font(fontpath)
 
+    self.width = 0
     self.instance = None
     for char in text:
       c = None
