@@ -36,6 +36,9 @@ class Solid():
     self.transforms = []
     self.params = dict()
 
+  def centralize(self):
+    pass
+
   def __add__(self, other):
     return Solid(left=self, right=other, op=UNION)
 
@@ -72,35 +75,41 @@ class Solid():
         right=self.right.toData(), transforms=self.transforms)
 
 class Box(Solid):
-  def __init__(self, x,y,z, center=True):
+  def __init__(self, x=10,y=10,z=10, center=False):
     Solid.__init__(self, primitive='box')
     self.params = dict(x=x,y=y,z=z)
 
 class Cylinder(Solid):
-  def __init__(self, radius=None, height=None, h=None, r=None, center=True):
+  def __init__(self, radius=None, height=None, h=None, r=None,
+    pie=360, r1=None, r2=None, center=False):
     Solid.__init__(self, primitive='cyl')
-    if radius is not None:
-      rad = radius
-    else:
-      rad = r
-    if height is not None:
-      hgt = height
-    else:
-      hgt = h
-    self.params = dict(r=rad,h=hgt)
+    if radius: r = radius
+    if height: h = height
+    self.params = dict(r=r,h=h)
 
 class Cone(Solid):
-  def __init__(self, radius=None, height=None, h=None, r=None, center=True):
+  def __init__(self, radius=None, height=None, h=None, r=None,
+    pie=360, center=False):
     Solid.__init__(self, primitive='con')
-    if radius is not None:
-      rad = radius
-    else:
-      rad = r
-    if height is not None:
-      hgt = height
-    else:
-      hgt = h
-    self.params = dict(r=rad,h=hgt)
+    if radius: r = radius
+    if height: h = height
+    self.params = dict(r=r,h=h)
+
+class Sphere(Solid):
+  def __init__(self, radius=None, r=None, phi=360, center=False):
+    Solid.__init__(self, primitive='sph')
+    if radius: r = radius
+    self.params = dict(r=r)
+
+class Torus(Solid):
+  def __init__(self, r1=None, r2=None, angle=360, center=False):
+    Solid.__init__(self, primitive='tor')
+    self.params = dict(r1=r1, r2=r2, angle=360)
+
+class Wedge(Solid):
+  def __init__(self, dx=5, dy=5, dz=5, ltx=0, center=True):
+    Solid.__init__(self, primitive='wdg')
+    self.params = dict(dx=dx, dy=dy, dz=dz)
 
 def description(*arg, **kwdArg):
   def decorator(func): return func
