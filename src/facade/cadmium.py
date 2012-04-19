@@ -18,6 +18,11 @@ X_axis = [1,0,0]
 Y_axis = [0,1,0]
 Z_axis = [0,0,1]
 
+inspectionData = {
+  'solidData' : {},
+  'paramData' : {}
+}
+
 class Solid():
 
   def __init__(self,
@@ -85,7 +90,10 @@ class Cylinder(Solid):
     Solid.__init__(self, primitive='cyl')
     if radius: r = radius
     if height: h = height
-    self.params = dict(r=r,h=h)
+    if r1 and r2:
+      self.params = dict(r1=r1, r2=r2, pie=pie, h=h)
+    else:
+      self.params = dict(r=r, pie=pie, h=h)
 
 class Cone(Solid):
   def __init__(self, radius=None, height=None, h=None, r=None,
@@ -112,10 +120,45 @@ class Wedge(Solid):
     self.params = dict(dx=dx, dy=dy, dz=dz)
 
 def description(*arg, **kwdArg):
+  validArgs = ['shortName','summary', 'alignment']
+  for k in kwdArg.keys():
+    if not(k in validArgs):
+      raise Exception('Invalid argument '+str(k))
+
+  if arg:
+    raise Exception('Only named arguments supported')
+
+  import cadmium
+  cadmium.inspectionData['solidData'] = kwdArg
   def decorator(func): return func
   return decorator
 
 def param(*arg, **kwdArg):
+  validArgs = ['name','shortName','description',
+    'valueRange','valueType','invalidValues','validValues','endpointInclusion']
+  for k in kwdArg.keys():
+    if not(k in validArgs):
+      raise Exception('Invalid argument '+str(k))
+
+  if arg:
+    raise Exception('Only named arguments supported')
+
+  import cadmium
+  if kwdArg.has_key('valueType'):
+    if kwdArg['valueType'] == int:
+      kwdArg['valueType'] = 'int'
+    elif kwdArg['valueType'] == float:
+      kwdArg['valueType'] = 'float'
+    elif kwdArg['valueType'] == str:
+      kwdArg['valueType'] = 'str'
+    elif kwdArg['valueType'] == bool:
+      kwdArg['valueType'] = 'bool'
+    elif kwdArg['valueType'] == cadmium.enum:
+      kwdArg['valueType'] = 'enum'
+    else:
+      kwdArg['valueType'] = 'unknown'
+
+  cadmium.inspectionData['paramData'][kwdArg['name']] = kwdArg
   def decorator(func): return func
   return decorator
 

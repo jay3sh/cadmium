@@ -4,25 +4,50 @@ import json
 import inspect
 import cadmium
 
-module_names = filter(
-  lambda x: x != 'cadmium.py' and x != 'compile.py' and x.endswith('.py'),
-  os.listdir('.'))
-module_names = map(lambda x: x.split('.')[0], module_names)
+def main():
+  module_names = filter(
+    lambda x: x != 'cadmium.py' and x != 'compile.py' and x.endswith('.py'),
+    os.listdir('.'))
+  module_names = map(lambda x: x.split('.')[0], module_names)
 
-std_classes = [ c[0] for c in inspect.getmembers(cadmium, inspect.isclass) ]
+  std_classes = [ c[0] for c in inspect.getmembers(cadmium, inspect.isclass) ]
 
-expressions = {}
+  expressions = {}
 
-for module_name in module_names:
-  mod = __import__(module_name)
-  classes = filter(lambda x: x[0] not in std_classes,
-    inspect.getmembers(mod, inspect.isclass))
+  for module_name in module_names:
+    mod = __import__(module_name)
+    classes = filter(lambda x: x[0] not in std_classes,
+      inspect.getmembers(mod, inspect.isclass))
 
-  assert len(classes) == 1
-  usolid = classes[0][1]()
-  expressions[module_name] = dict(
-    name = classes[0][0],
-    csg = usolid.toData()
-  )
+    assert len(classes) == 1
+    usolid = classes[0][1]()
+    meta = cadmium.inspectionData
+    paramData = meta['paramData']
+    argspec = inspect.getargspec(classes[0][1].__init__)
+    argdetails = []
+    i = 0
+    for argname in argspec.args:
+      if argname == 'self': continue
+      argdetail = dict(
+        name = argname,
+        defaultValue = argspec.defaults[i]
+      )
+      if paramData.has_key(argname):
+        d = paramData[argname]
+        for key in [ 'shortName', 'description','valueRange', 'valueType',
+          'invalidValues', 'validValues', 'endpointInclusion' ]:
+          if d.has_key(key): argdetail[key] = d.get(key)
+      argdetails.append(argdetail)
+      i += 1
+      
+    expressions[module_name] = dict(
+      name = classes[0][0],
+      csg = usolid.toData(),
+      argdetails = argdetails
+    )
+    cadmium.inspectionData = dict(solidData={}, paramData={})
 
-open('expressions.js','w').write(json.dumps(expressions, indent=2))
+  open('expressions.js','w').write(json.dumps(expressions, indent=2))
+
+if __name__ == '__main__':
+  main()
