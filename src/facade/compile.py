@@ -1,4 +1,5 @@
 
+import re
 import os
 import json
 import inspect
@@ -47,7 +48,18 @@ def main():
     )
     cadmium.inspectionData = dict(solidData={}, paramData={})
 
-  open('expressions.js','w').write(json.dumps(expressions, indent=2))
+  entries = []
+  for k, v in expressions.items():
+    s = '"'+k+'":{'
+    s += '"name":'+'"'+v['name']+'"'+','
+    s += '"argdetails":'+json.dumps(v['argdetails'], indent=2)+','
+    s += '"csg": function (a) { return '+json.dumps(v['csg'],indent=2)+'}'
+    s += '}'
+    entries.append(s)
+
+  outtext = '$.templates = {'+',\n\n'.join(entries)+'}'
+
+  open('expressions.js','w').write(outtext)
 
 if __name__ == '__main__':
   main()
