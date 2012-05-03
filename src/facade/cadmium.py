@@ -101,13 +101,13 @@ class Cone(Solid):
     Solid.__init__(self, primitive='con')
     if radius: r = radius
     if height: h = height
-    self.params = dict(r=r,h=h)
+    self.params = dict(r=r,h=h, pie=pie)
 
 class Sphere(Solid):
   def __init__(self, radius=None, r=None, phi=360, center=False):
     Solid.__init__(self, primitive='sph')
     if radius: r = radius
-    self.params = dict(r=r)
+    self.params = dict(r=r, phi=phi)
 
 class Torus(Solid):
   def __init__(self, r1=None, r2=None, angle=360, center=False):
