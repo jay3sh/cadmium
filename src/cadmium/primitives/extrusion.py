@@ -20,23 +20,24 @@ class Extrusion(Solid):
 
   def __init__(self,center=False):
     self.thickness = 10
-    knots = TColStd_Array1OfReal(0, 5)
+
+    wire = BRepBuilderAPI_MakeWire()
+
+    knots = TColStd_Array1OfReal(0, 4)
     knots.SetValue(0,0)
     knots.SetValue(1,1)
     knots.SetValue(2,5)
     knots.SetValue(3,6)
     knots.SetValue(4,8)
-    knots.SetValue(5,9)
 
-    mults = TColStd_Array1OfInteger(0, 5)
+    mults = TColStd_Array1OfInteger(0, 4)
     mults.SetValue(0,4)
     mults.SetValue(1,1)
     mults.SetValue(2,1)
     mults.SetValue(3,1)
-    mults.SetValue(4,1)
-    mults.SetValue(5,4)
+    mults.SetValue(4,4)
 
-    poles = TColgp_Array1OfPnt(0, 7)
+    poles = TColgp_Array1OfPnt(0, 6)
     poles.SetValue(0, gp_Pnt(0, 1, 0))
     poles.SetValue(1, gp_Pnt(0, 1, 0))
     poles.SetValue(2, gp_Pnt(0, 2, 1))
@@ -44,13 +45,15 @@ class Extrusion(Solid):
     poles.SetValue(4, gp_Pnt(0, 4, 2.5))
     poles.SetValue(5, gp_Pnt(0, 1, 3))
     poles.SetValue(6, gp_Pnt(0, 0.5, 4))
-    poles.SetValue(7, gp_Pnt(0, 1, 0))
 
     curve = Geom_BSplineCurve(poles, knots, mults, 3)
     me = BRepBuilderAPI_MakeEdge(curve.GetHandle())    
-
-    wire = BRepBuilderAPI_MakeWire()
     wire.Add(me.Edge())
+
+    closer = BRepBuilderAPI_MakeEdge(
+      gp_Lin(gp_Pnt(0,0.5,4),gp_Dir(gp_Vec(gp_Pnt(0,0.5,4),gp_Pnt(0,1,0)))),
+      gp_Pnt(0,0.5,4), gp_Pnt(0,1,0))
+    wire.Add(closer.Edge())
 
     face = BRepBuilderAPI_MakeFace(wire.Wire())
     extrusion_vector = gp_Vec(self.thickness,0,0)
