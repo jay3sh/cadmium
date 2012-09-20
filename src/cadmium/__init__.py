@@ -18,6 +18,7 @@ import primitives.wedge
 import primitives.torus
 import primitives.text
 import primitives.revolution
+import primitives.extrusion
 
 Cylinder = primitives.cylinder.Cylinder
 Sphere = primitives.sphere.Sphere
@@ -28,6 +29,7 @@ Torus = primitives.torus.Torus
 Glyph = primitives.text.Glyph
 Text = primitives.text.Text
 Revolution = primitives.revolution.Revolution
+Extrusion = primitives.extrusion.Extrusion
 
 Solid = solid.Solid
 
