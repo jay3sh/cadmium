@@ -14,36 +14,37 @@ from OCC.Geom import Geom_SurfaceOfRevolution
 
 from cadmium.solid import Solid
 
+def unique(seq):
+  noDupes = [] 
+  [noDupes.append(i) for i in seq if not noDupes.count(i)] 
+  return noDupes
+
 class Revolution(Solid):
 
-  def __init__(self,center=False):
-    knots = TColStd_Array1OfReal(0, 4)
-    knots.SetValue(0,0)
-    knots.SetValue(1,1)
-    knots.SetValue(2,5)
-    knots.SetValue(3,6)
-    knots.SetValue(4,8)
+  def __init__(self,
+    knotVector=[], controlPoints=[], degree=3, center=False):
 
-    mults = TColStd_Array1OfInteger(0, 4)
-    mults.SetValue(0,4)
-    mults.SetValue(1,1)
-    mults.SetValue(2,1)
-    mults.SetValue(3,1)
-    mults.SetValue(4,4)
+    uniqueKnots = unique(knotVector)
+    frequency = [ knotVector.count(knot) for knot in uniqueKnots ]
 
-    poles = TColgp_Array1OfPnt(0, 6)
-    poles.SetValue(0, gp_Pnt(0, 1, 0))
-    poles.SetValue(1, gp_Pnt(0, 1, 0))
-    poles.SetValue(2, gp_Pnt(0, 2, 1))
-    poles.SetValue(3, gp_Pnt(0, 3, 2))
-    poles.SetValue(4, gp_Pnt(0, 4, 2.5))
-    poles.SetValue(5, gp_Pnt(0, 1, 3))
-    poles.SetValue(6, gp_Pnt(0, 0.5, 4))
+    knots = TColStd_Array1OfReal(0, len(uniqueKnots)-1)
+    for i in range(len(uniqueKnots)):
+      knots.SetValue(i, uniqueKnots[i])
 
-    curve = Geom_BSplineCurve(poles, knots, mults, 3)
+    mults = TColStd_Array1OfInteger(0, len(frequency)-1)
+    for i in range(len(frequency)):
+      mults.SetValue(i,frequency[i])
+
+    poles = TColgp_Array1OfPnt(0, len(controlPoints)-1)
+    for i in range(len(controlPoints)):
+      p = controlPoints[i]
+      poles.SetValue(i, gp_Pnt(p[0],p[1],p[2]))
+
+    curve = Geom_BSplineCurve(poles, knots, mults, degree)
     h_curve = Handle_Geom_BSplineCurve(curve)
 
     X_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(1,0,0))
     
     self.instance = BRepPrimAPI_MakeRevolution(h_curve)
     Solid.__init__(self, self.instance.Shape(), center=center)
+

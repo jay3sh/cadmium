@@ -16,44 +16,49 @@ from OCC.BRepBuilderAPI import \
 
 from cadmium.solid import Solid
 
+def unique(seq):
+  noDupes = [] 
+  [noDupes.append(i) for i in seq if not noDupes.count(i)] 
+  return noDupes
+
 class Extrusion(Solid):
 
-  def __init__(self,center=False):
+  def __init__(self,
+    knotVector=[], controlPoints=[], degree=3, center=False):
+
     self.thickness = 10
 
     wire = BRepBuilderAPI_MakeWire()
 
-    knots = TColStd_Array1OfReal(0, 4)
-    knots.SetValue(0,0)
-    knots.SetValue(1,1)
-    knots.SetValue(2,5)
-    knots.SetValue(3,6)
-    knots.SetValue(4,8)
+    uniqueKnots = unique(knotVector)
+    frequency = [ knotVector.count(knot) for knot in uniqueKnots ]
 
-    mults = TColStd_Array1OfInteger(0, 4)
-    mults.SetValue(0,4)
-    mults.SetValue(1,1)
-    mults.SetValue(2,1)
-    mults.SetValue(3,1)
-    mults.SetValue(4,4)
+    knots = TColStd_Array1OfReal(0, len(uniqueKnots)-1)
+    for i in range(len(uniqueKnots)):
+      knots.SetValue(i, uniqueKnots[i])
 
-    poles = TColgp_Array1OfPnt(0, 6)
-    poles.SetValue(0, gp_Pnt(0, 1, 0))
-    poles.SetValue(1, gp_Pnt(0, 1, 0))
-    poles.SetValue(2, gp_Pnt(0, 2, 1))
-    poles.SetValue(3, gp_Pnt(0, 3, 2))
-    poles.SetValue(4, gp_Pnt(0, 4, 2.5))
-    poles.SetValue(5, gp_Pnt(0, 1, 3))
-    poles.SetValue(6, gp_Pnt(0, 0.5, 4))
+    mults = TColStd_Array1OfInteger(0, len(frequency)-1)
+    for i in range(len(frequency)):
+      mults.SetValue(i,frequency[i])
+
+    poles = TColgp_Array1OfPnt(0, len(controlPoints)-1)
+    for i in range(len(controlPoints)):
+      p = controlPoints[i]
+      poles.SetValue(i, gp_Pnt(p[0],p[1],p[2]))
 
     curve = Geom_BSplineCurve(poles, knots, mults, 3)
     me = BRepBuilderAPI_MakeEdge(curve.GetHandle())    
     wire.Add(me.Edge())
 
-    closer = BRepBuilderAPI_MakeEdge(
-      gp_Lin(gp_Pnt(0,0.5,4),gp_Dir(gp_Vec(gp_Pnt(0,0.5,4),gp_Pnt(0,1,0)))),
-      gp_Pnt(0,0.5,4), gp_Pnt(0,1,0))
-    wire.Add(closer.Edge())
+    first = controlPoints[0]
+    first = gp_Pnt(first[0], first[1], first[2])
+    last = controlPoints[-1]
+    last = gp_Pnt(last[0], last[1], last[2])
+
+    if not first.IsEqual(last,1.0e-9):
+      closer = BRepBuilderAPI_MakeEdge(
+        gp_Lin(first,gp_Dir(gp_Vec(first,last))), first, last)
+      wire.Add(closer.Edge())
 
     face = BRepBuilderAPI_MakeFace(wire.Wire())
     extrusion_vector = gp_Vec(self.thickness,0,0)
