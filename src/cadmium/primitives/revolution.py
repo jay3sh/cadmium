@@ -3,6 +3,7 @@
 # Copyright (C) 2011 Jayesh Salvi [jayesh <at> 3dtin <dot> com]
 #
 
+import math
 
 from OCC.gp import *
 from OCC.TColgp import TColgp_Array1OfPnt
@@ -22,7 +23,7 @@ def unique(seq):
 class Revolution(Solid):
 
   def __init__(self,
-    knotVector=[], controlPoints=[], degree=3, center=False):
+    knotVector=[], controlPoints=[], degree=3, center=False, axis=2):
 
     uniqueKnots = unique(knotVector)
     frequency = [ knotVector.count(knot) for knot in uniqueKnots ]
@@ -43,8 +44,12 @@ class Revolution(Solid):
     curve = Geom_BSplineCurve(poles, knots, mults, degree)
     h_curve = Handle_Geom_BSplineCurve(curve)
 
-    X_axis = gp_Ax1(gp_Pnt(0,0,0),gp_Dir(1,0,0))
+    axes = [
+      gp_Ax2(gp_Pnt(0,0,0),gp_Dir(1,0,0)),
+      gp_Ax2(gp_Pnt(0,0,0),gp_Dir(0,1,0)),
+      gp_Ax2(gp_Pnt(0,0,0),gp_Dir(0,0,1)),
+    ]
     
-    self.instance = BRepPrimAPI_MakeRevolution(h_curve)
+    self.instance = BRepPrimAPI_MakeRevolution(axes[axis], h_curve)
     Solid.__init__(self, self.instance.Shape(), center=center)
 
