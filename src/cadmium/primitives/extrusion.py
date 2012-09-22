@@ -24,9 +24,10 @@ def unique(seq):
 class Extrusion(Solid):
 
   def __init__(self,
-    knotVector=[], controlPoints=[], degree=3, center=False):
+    knotVector=[], controlPoints=[], degree=3, thickness=10, axis=0,
+    center=False):
 
-    self.thickness = 10
+    self.thickness = thickness
 
     wire = BRepBuilderAPI_MakeWire()
 
@@ -61,7 +62,13 @@ class Extrusion(Solid):
       wire.Add(closer.Edge())
 
     face = BRepBuilderAPI_MakeFace(wire.Wire())
-    extrusion_vector = gp_Vec(self.thickness,0,0)
+    if axis == 0:
+      extrusion_vector = gp_Vec(self.thickness,0,0)
+    elif axis == 1:
+      extrusion_vector = gp_Vec(0,self.thickness,0)
+    elif axis == 2:
+      extrusion_vector = gp_Vec(0,0,self.thickness)
+
     self.instance = BRepPrimAPI_MakePrism(face.Shape(), extrusion_vector)
     Solid.__init__(self, self.instance.Shape(), center=center)
 
