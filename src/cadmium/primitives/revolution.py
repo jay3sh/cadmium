@@ -28,7 +28,7 @@ def get_principal_plane(points):
   refz = points[0][2]
   if all(map(lambda x: x[0] == refx, points)): return 0
   if all(map(lambda x: x[1] == refy, points)): return 1
-  if all(map(lambda x: x[2] == refy, points)): return 2
+  if all(map(lambda x: x[2] == refz, points)): return 2
   from cadmium import CadmiumException
   raise CadmiumException('Control points not in plane')
 
