@@ -34,7 +34,7 @@ def get_principal_plane(points):
   raise CadmiumException('Control points not in plane')
   
 def is_self_intersecting(h_curve):
-  isect = Geom2dAPI_InterCurveCurve(h_curve, h_curve)
+  isect = Geom2dAPI_InterCurveCurve(h_curve)
   return isect.NbPoints() > 0
 
 class Extrusion(Solid):
