@@ -28,14 +28,11 @@
 
 typedef struct {
   PyObject_HEAD
-  TopoDS_Shape *pShape;
+  TopoDS_Shape shape;
 } Shape;
 
 static void
 Shape_dealloc(Shape *self) {
-  if(self->pShape) {
-    delete self->pShape;
-  }
   self->ob_type->tp_free((PyObject *)self);
 }
 
@@ -52,11 +49,38 @@ Shape_init(Shape *self, PyObject *args, PyObject *kwds) {
   return 0;
 }
 
+// 
+// Affine transform methods
+//
+static PyObject*
+Shape_translate(Shape *self, PyObject *args, PyObject *kwds)
+{
+  double dx=0.0, dy=0.0, dz=0.0;
+
+  if (!PyArg_ParseTuple(args,"ddd", &dx, &dy, &dz)) {
+    std::cout << "Failed to parse init args" << std::endl;
+    return 0;
+  }
+
+  /*
+  gp_Trsf trsf;
+  gp_Vec delta(dx, dy, dz);
+  trsf.SetTranslation(delta);
+  BRepBuilderAPI_Transform brep(*(self->shape), trsf, Standard_False);
+  brep.Build();
+  self->shape = brep.Shape();
+  */
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
 static PyMemberDef Shape_members[] = {
   { NULL }
 };
 
 static PyMethodDef Shape_methods[] = {
+  { "translate", (PyCFunction) Shape_translate, METH_VARARGS, "Translate" },
   { NULL }
 };
 
@@ -107,13 +131,76 @@ static PyTypeObject ShapeType = {
  ******************************/
 
 static PyObject *
-occ_makecyl(PyObject *self, PyObject *args)
+occ_makecon(PyObject *self, PyObject *args)
 {
+  /*
+  double radius1;
+  double radius2;
+  double height;
+  double pie;
+
+  if (!PyArg_ParseTuple(args, "dddd", &radius1, &radius2, &height, &pie)) {
+    std::cout << "Failed to parse args" << std::endl;
+    return 0;
+  }
+
+  PyObject *pyShape = _PyObject_New(&ShapeType);
+  PyObject_Init(pyShape, &ShapeType);
+
+  ((Shape *)pyShape)->shape = (TopoDS_Shape *)
+    &BRepPrimAPI_MakeCone(radius1, radius2, height, pie).Shape();
+
+  Py_INCREF(pyShape);
+  return pyShape;
+  */
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
 static PyObject *
 occ_makebox(PyObject *self, PyObject *args)
 {
+  double x;
+  double y;
+  double z;
+
+  if (!PyArg_ParseTuple(args, "ddd", &x, &y, &z)) {
+    std::cout << "Failed to parse args" << std::endl;
+    return 0;
+  }
+
+  PyObject *pyShape = _PyObject_New(&ShapeType);
+  PyObject_Init(pyShape, &ShapeType);
+
+  ((Shape *)pyShape)->shape = BRepPrimAPI_MakeBox(x, y, z).Shape();
+
+  Py_INCREF(pyShape);
+  return pyShape;
+}
+
+static PyObject *
+occ_makesph(PyObject *self, PyObject *args)
+{
+  /*
+  double radius;
+  double phi;
+
+  if (!PyArg_ParseTuple(args, "dd", &radius, &phi)) {
+    std::cout << "Failed to parse args" << std::endl;
+    return 0;
+  }
+
+  PyObject *pyShape = _PyObject_New(&ShapeType);
+  PyObject_Init(pyShape, &ShapeType);
+
+  ((Shape *)pyShape)->shape = 
+    (TopoDS_Shape *)&BRepPrimAPI_MakeSphere(radius, phi).Shape();
+
+  Py_INCREF(pyShape);
+  return pyShape;
+  */
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
 /*****************************
@@ -121,8 +208,9 @@ occ_makebox(PyObject *self, PyObject *args)
  *****************************/
 
 static PyMethodDef occ_methods[] = {
-  { "makecyl"   , occ_makecyl   , METH_VARARGS , NULL } ,
+  { "makecon"   , occ_makecon   , METH_VARARGS , NULL } ,
   { "makebox"   , occ_makebox   , METH_VARARGS , NULL } ,
+  { "makesph"   , occ_makesph   , METH_VARARGS , NULL } ,
   { NULL }  /* Sentinel */
 };
 
