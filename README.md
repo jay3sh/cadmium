@@ -4,7 +4,7 @@ Cadmium allows you to write python code to create primitive objects (Box, Cylind
 
 Screenshots and examples
 ------------------------
-[http://jayesh3.github.com/cadmium/](http://jayesh3.github.com/cadmium/).
+[http://jay3sh.github.com/cadmium/](http://jay3sh.github.com/cadmium/).
 
 Typical Solid modelling code with Cadmium
 ------------------------------------------
