@@ -321,7 +321,7 @@ class Solid():
     '''
     Writes STL output of the solid
 
-    :param filename: Path of the file to write JSON to
+    :param filename: Path of the file to write STL data to
     :type filename: str
     :param ascii: choose between ASCII or Binary STL format
     :type ascii: bool
