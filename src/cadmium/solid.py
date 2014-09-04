@@ -10,7 +10,7 @@ from math import pi as math_pi
 import cadmium
 import json
 
-from OCC import StlAPI
+from OCC import StlAPI, STEPControl
 from OCC.BRepAlgoAPI import *
 from OCC.BRepBuilderAPI import *
 from OCC.gp import *
@@ -311,11 +311,68 @@ class Solid():
       yx, 1, yz, 0,
       zx, zy, 1, 0,
       Precision_Angular(), Precision_Confusion()
-    );
+    )
     brep = BRepBuilderAPI_GTransform(self.shape, gp_GTrsf(xform), False)
     brep.Build()
     self.shape = brep.Shape()
     return self
+  
+  def toSTEP(self, filename, verbose=False, tolerance=0.001):
+    '''
+    Writes STEP output of the solid
+
+    :param filename: Path of the file to write STEP to
+    :type filename: str
+    :param verbose: Choose if you want to see the STEP stats
+    :type verbose: bool
+    :param tolerance: Provides control over quality of exported STEP.
+    :type tolernace: float
+    '''
+    class Verboseness():
+      def __enter__(self):
+        if not verbose:
+          import sys, os
+          sys.stdout.flush()
+          self.newstdout = os.dup(1)
+          self.devnull = os.open('/dev/null', os.O_WRONLY)
+          os.dup2(self.devnull, 1)
+          os.close(self.devnull)
+          sys.stdout = os.fdopen(self.newstdout, 'w')
+      def __exit__(self, type, value, traceback):
+        if not verbose:
+          os.dup2(self.newstdout, 1)
+
+    with Verboseness():
+      stepWriter = STEPControl.STEPControl_Writer()
+      stepWriter.SetTolerance(tolerance)
+      if self.shape:
+        status = stepWriter.Transfer(self.shape, 
+                                     STEPControl.STEPControl_AsIs)
+        if status:
+          stepWriter.Write(filename)
+
+  def fromSTEP(self filename, verbose=False):
+    '''
+     Imports a STEP file to a solid
+
+    :param filename: Path of the file to write STEP to
+    :type filename: str
+    :param verbose: Choose if you want to see the STEP stats
+    :type verbose: bool
+    '''
+    with _Verboseness(verbose):
+      if filename:
+        stepReader = STEPControl.STEPControl_Reader()
+        status = stepReader.ReadFile(filename)
+        if status:
+          nbr = stepReader.NbRootsForTransfer()
+          for n in range(1, nbr +1):
+            stepReader.TransferRoot(n)
+            nbs = stepReader.NbShapes()
+            if nbs == 1:
+              if stepReader.Shape(1):
+                self.shape = stepReader.Shape(1)
+                return self
 
   def toSTL(self, filename, ascii=False, deflection=0.01):
     '''
@@ -323,7 +380,7 @@ class Solid():
 
     :param filename: Path of the file to write STL data to
     :type filename: str
-    :param ascii: choose between ASCII or Binary STL format
+    :param ascii: Choose between ASCII or Binary STL format
     :type ascii: bool
     :param deflection: Provides control over quality of exported STL. Higher the deflection value, lower the accuracy of exported STL, smaller the size of resulting file. Lower the deflection value, more accurate the exported STL, bigger the size of resulting file.
     :type deflection: float
